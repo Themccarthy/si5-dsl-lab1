@@ -1,9 +1,11 @@
-package io.github.mosser.arduinoml.kernel;
+package jvm.src.main.java.io.github.mosser.arduinoml.kernel;
 
-import io.github.mosser.arduinoml.kernel.behavioral.State;
-import io.github.mosser.arduinoml.kernel.generator.Visitable;
-import io.github.mosser.arduinoml.kernel.generator.Visitor;
-import io.github.mosser.arduinoml.kernel.structural.Brick;
+
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.NamedElement;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitable;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitor;
 
 import java.util.ArrayList;
 import java.util.List;

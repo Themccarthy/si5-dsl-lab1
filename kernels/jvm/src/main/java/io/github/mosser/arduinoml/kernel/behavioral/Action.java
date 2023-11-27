@@ -1,9 +1,10 @@
-package io.github.mosser.arduinoml.kernel.behavioral;
+package jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral;
 
-import io.github.mosser.arduinoml.kernel.generator.Visitable;
-import io.github.mosser.arduinoml.kernel.generator.Visitor;
-import io.github.mosser.arduinoml.kernel.structural.Actuator;
-import io.github.mosser.arduinoml.kernel.structural.SIGNAL;
+
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitable;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitor;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL;
 
 public class Action implements Visitable {
 

@@ -1,7 +1,7 @@
-package io.github.mosser.arduinoml.kernel.structural;
+package jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural;
 
-import io.github.mosser.arduinoml.kernel.NamedElement;
-import io.github.mosser.arduinoml.kernel.generator.Visitable;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.NamedElement;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitable;
 
 public abstract class Brick implements NamedElement, Visitable {
 

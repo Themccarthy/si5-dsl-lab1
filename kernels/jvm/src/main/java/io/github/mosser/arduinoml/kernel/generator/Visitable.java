@@ -1,4 +1,4 @@
-package io.github.mosser.arduinoml.kernel.generator;
+package jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator;
 
 public interface Visitable {
 

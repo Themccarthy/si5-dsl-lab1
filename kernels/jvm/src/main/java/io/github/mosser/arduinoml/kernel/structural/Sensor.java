@@ -1,6 +1,6 @@
-package io.github.mosser.arduinoml.kernel.structural;
+package jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural;
 
-import io.github.mosser.arduinoml.kernel.generator.Visitor;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitor;
 
 public class Sensor extends Brick {
 	@Override

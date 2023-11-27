@@ -1,8 +1,13 @@
-package io.github.mosser.arduinoml.kernel.generator;
+package jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator;
 
-import io.github.mosser.arduinoml.kernel.App;
-import io.github.mosser.arduinoml.kernel.behavioral.*;
-import io.github.mosser.arduinoml.kernel.structural.*;
+
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick;
 
 /**
  * Quick and dirty visitor to support the generation of Wiring code
