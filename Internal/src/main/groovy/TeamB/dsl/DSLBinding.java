@@ -1,8 +1,7 @@
-package dsl;
+package TeamB.dsl;
 
 import java.util.Map;
 
-import dsl.Model;
 import groovy.lang.Binding;
 import groovy.lang.Script;
 

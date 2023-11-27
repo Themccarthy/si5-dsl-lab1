@@ -1,4 +1,4 @@
-package dsl;
+package TeamB.dsl;
 
 
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App;
@@ -11,18 +11,22 @@ import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Model {
     private Map<String, Brick> brickMap = new HashMap<>();
     private Map<String, State> stateMap = new HashMap<>();
     private Map<String, Action> actionMap = new HashMap<>();
-
     private State initialState = new State();
 
-    public Model() {
+    private DSLBinding binding;
 
+    public Model(DSLBinding dslBinding) {
+        this.binding = dslBinding;
+    }
+
+    private void bindVariable(String name, Object variable) {
+        binding.setVariable(name, variable);
     }
 
     public void createSensor(String name, Integer pin){
@@ -30,6 +34,8 @@ public class Model {
         sensor.setName(name);
         sensor.setPin(pin);
         brickMap.put(name, sensor);
+
+        bindVariable(name, sensor);
     }
 
     public Sensor getSensor(String name) {
@@ -41,6 +47,8 @@ public class Model {
         actuator.setName(name);
         actuator.setPin(pin);
         brickMap.put(name, actuator);
+
+        bindVariable(name, actuator);
     }
 
     public Actuator getActuator(String name) {
@@ -53,17 +61,23 @@ public class Model {
         state.setActions(actions);
         state.setTransition(transition);
         stateMap.put(name, state);
+
+        bindVariable(name, state);
     }
 
     public State getState(String name) {
         return stateMap.getOrDefault(name, null);
     }
 
-    public void createInitialState(String name, List<Action> actions, Transition transition) {
-        State state = new State();
-        state.setName(name);
-        state.setActions(actions);
-        state.setTransition(transition);
+    public void createTransition(State baseState, State destinationState, Sensor sensor, SIGNAL value) {
+        Transition transition = new Transition();
+        transition.setNext(destinationState);
+        transition.setSensor(sensor);
+        transition.setValue(value);
+        baseState.setTransition(transition);
+    }
+
+    public void createInitialState(State state) {
         initialState = state;
     }
 
@@ -76,8 +90,9 @@ public class Model {
         return app;
     }
 
-    public App generate(App app, ToWiring visitor) {
+    public Object generate(App app, ToWiring visitor) {
         app.accept(visitor);
-        return app;
+
+        return visitor.getResult();
     }
 }

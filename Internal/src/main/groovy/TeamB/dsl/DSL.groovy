@@ -1,19 +1,20 @@
-package dsl
+package TeamB.dsl
 
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL;
 
 class DSL {
     private GroovyShell shell
     private CompilerConfiguration configuration
-    private Binding binding
+    private DSLBinding binding
     private Basescript basescript
 
     DSL() {
-        binding = new Binding()
-        binding.setGroovuinoMLModel(new Model(binding));
+        binding = new DSLBinding()
+        binding.setModel(new Model(binding));
         configuration = getDSLConfiguration()
-        configuration.setScriptBaseClass("main.groovy.dsl.Basescript")
+        configuration.setScriptBaseClass("TeamB.dsl.Basescript")
         shell = new GroovyShell(configuration)
 
         binding.setVariable("high", SIGNAL.HIGH)

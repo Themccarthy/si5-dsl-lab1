@@ -1,10 +1,10 @@
-package main;
+package TeamB.main;
 
-import dsl.DSL;
+import TeamB.dsl.DSL;
 
 import java.io.File;
 
-public class Main {
+public class GroovyDSL {
     public static void main(String[] args) {
         DSL dsl = new DSL();
         if(args.length > 0) {
