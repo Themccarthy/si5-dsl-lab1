@@ -1,6 +1,0 @@
-2023-11-27T19:29:59.263Z - Info: Pin disponibles pour les actuators:23,24,25,26,27,28
-2023-11-27T19:29:59.265Z - Info: Pin disponibles pour les sensors2,3,4,5,6,11,12,13,14,15,16,17,18,19
-2023-11-27T19:29:59.268Z - Warning: Le pin 8 n a pas pu etre assigné a la brique button un pin lui a alors été assigné par defaut a un pin disponible
-2023-11-27T19:29:59.270Z - Info: La brique red_led a été lié dynamiquement au pin 23
-2023-11-27T19:29:59.271Z - Info: La brique red_led2 a été lié dynamiquement au pin 24
-2023-11-27T19:29:59.271Z - Info: La brique button a été lié dynamiquement au pin 2
