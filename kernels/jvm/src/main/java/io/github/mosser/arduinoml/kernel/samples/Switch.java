@@ -1,10 +1,10 @@
 package jvm.src.main.java.io.github.mosser.arduinoml.kernel.samples;
 
-import io.github.mosser.arduinoml.kernel.App;
-import io.github.mosser.arduinoml.kernel.behavioral.*;
-import io.github.mosser.arduinoml.kernel.generator.ToWiring;
-import io.github.mosser.arduinoml.kernel.generator.Visitor;
-import io.github.mosser.arduinoml.kernel.structural.*;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.*;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitor;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.*;
 
 import java.util.Arrays;
 

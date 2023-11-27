@@ -1,7 +1,7 @@
 package dsl;
 
-import io.github.mosser.arduinoml.kernel.structural.Actuator;
-import io.github.mosser.arduinoml.kernel.structural.Sensor;
+
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor;
 
 public class Model {
     public Sensor createSensor(String name, Integer pin){
