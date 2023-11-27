@@ -1,0 +1,15 @@
+{
+    "projectName": "ArduinoMlB",
+    "languages": [{
+        "id": "arduino-ml-b",
+        "grammar": "src/language/arduino-ml-b.langium",
+        "fileExtensions": [".aml"],
+        "textMate": {
+            "out": "syntaxes/arduino-ml-b.tmLanguage.json"
+        },
+        "monarch": {
+            "out": "syntaxes/arduino-ml-b.monarch.ts"
+        }
+    }],
+    "out": "src/language/generated"
+}
