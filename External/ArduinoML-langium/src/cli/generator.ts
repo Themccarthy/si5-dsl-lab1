@@ -40,7 +40,7 @@ STATE currentState = `+app.initial.ref?.name+`;`
     ,NL);
 	
     for(const brick of app.bricks){
-        if ("inputPin" in brick){
+        if (isSensor(brick)){
             fileNode.append(`
 bool `+brick.name+`BounceGuard = false;
 long `+brick.name+`LastDebounceTime = 0;

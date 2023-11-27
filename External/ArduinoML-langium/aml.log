@@ -1,16 +1,6 @@
-2023-11-27T13:03:22.717Z - Info: Pin disponibles pour les actuators:23,24,25,26,27,28
-2023-11-27T13:03:22.720Z - Info: Pin disponibles pour les sensors2,3,4,5,6,11,12,13,14,15,16,17,18,19
-2023-11-27T13:03:22.721Z - Warning: Le pin 8 n a pas pu etre assigné a la brique button un pin lui a alors été assigné par defaut a un pin disponible
-2023-11-27T13:03:22.723Z - Info: La brique red_led a été lié dynamiquement au pin 23
-2023-11-27T13:03:22.724Z - Info: La brique red_led2 a été lié dynamiquement au pin 24
-2023-11-27T13:03:22.725Z - Info: La brique button a été lié dynamiquement au pin 2
-2023-11-27T13:03:55.459Z - Info: Pin disponibles pour les actuators:23,24,25,26,27,28
-2023-11-27T13:03:55.461Z - Info: Pin disponibles pour les sensors2,3,4,5,6,11,12,13,14,15,16,17,18,19
-2023-11-27T13:03:55.465Z - Warning: Le pin 8 n a pas pu etre assigné a la brique button un pin lui a alors été assigné par defaut a un pin disponible
-2023-11-27T13:03:55.466Z - Info: La brique red_led a été lié dynamiquement au pin 23
-2023-11-27T13:03:55.468Z - Info: La brique red_led2 a été lié dynamiquement au pin 24
-2023-11-27T13:03:55.469Z - Info: La brique red_led3 a été lié dynamiquement au pin 25
-2023-11-27T13:03:55.470Z - Info: La brique red_led4 a été lié dynamiquement au pin 26
-2023-11-27T13:03:55.471Z - Info: La brique red_led5 a été lié dynamiquement au pin 27
-2023-11-27T13:03:55.472Z - Info: La brique red_led6 a été lié dynamiquement au pin 28
-2023-11-27T13:03:55.474Z - Error: Pas assez de pin disponible pour toutes les actuators crées, vous disposez de 8 actuator dans votre systeme or vous n avez que 6 pin disponible pour les actuator
+2023-11-27T19:29:59.263Z - Info: Pin disponibles pour les actuators:23,24,25,26,27,28
+2023-11-27T19:29:59.265Z - Info: Pin disponibles pour les sensors2,3,4,5,6,11,12,13,14,15,16,17,18,19
+2023-11-27T19:29:59.268Z - Warning: Le pin 8 n a pas pu etre assigné a la brique button un pin lui a alors été assigné par defaut a un pin disponible
+2023-11-27T19:29:59.270Z - Info: La brique red_led a été lié dynamiquement au pin 23
+2023-11-27T19:29:59.271Z - Info: La brique red_led2 a été lié dynamiquement au pin 24
+2023-11-27T19:29:59.271Z - Info: La brique button a été lié dynamiquement au pin 2

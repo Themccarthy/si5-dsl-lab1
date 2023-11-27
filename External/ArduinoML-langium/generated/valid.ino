@@ -7,6 +7,11 @@ enum STATE {off, on};
 
 STATE currentState = off;
 
+bool buttonBounceGuard = false;
+long buttonLastDebounceTime = 0;
+
+            
+
 	void setup(){
 		pinMode(23, OUTPUT); // red_led [Actuator]
 		pinMode(24, OUTPUT); // red_led2 [Actuator]
