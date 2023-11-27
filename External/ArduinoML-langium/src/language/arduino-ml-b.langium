@@ -3,6 +3,10 @@ grammar ArduinoMlB
 entry App:
     'app' name=ID 'initial' 'state' initial=[State:ID]
 	'{'
+        ('pins'
+        pins+=Pin
+        (pins+=Pin)*)?
+
 		'bricks'
 		bricks+=Brick
 		(bricks+=Brick)* 
@@ -23,6 +27,10 @@ Sensor:
     {infer Sensor}
 	'Sensor'  name=ID (':' pin=INT)?;
 
+Pin:
+    {infer Pin}
+    'Pin' name=ID ':' pin=INT ':' type=PinType;
+
 State:
     name=ID '{'
 		actions+=Action
@@ -41,6 +49,13 @@ Signal:
     value=(HIGH | LOW);
 terminal HIGH: 'HIGH';
 terminal LOW: 'LOW';
+
+PinType:
+    value=(DIGITAL_INPUT | DIGITAL_OUTPUT | ANALOG_INPUT | ANALOG_OUTPUT);
+terminal DIGITAL_INPUT: 'DIGITAL_INPUT';
+terminal DIGITAL_OUTPUT: 'DIGITAL_OUTPUT';
+terminal ANALOG_INPUT: 'ANALOG_INPUT';
+terminal ANALOG_OUTPUT: 'ANALOG_OUTPUT';
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

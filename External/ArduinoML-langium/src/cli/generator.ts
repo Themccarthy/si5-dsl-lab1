@@ -6,8 +6,8 @@ import { extractDestinationAndName } from './cli-util.js';
 import { App, State, Action, Transition, Actuator, Sensor, isSensor, isActuator} from '../language/generated/ast.js';
 import { integer } from 'vscode-languageserver';
 
-let availableActuatorPins = [23,24,25,26,27,28];
-let availableSensorPins = [2,3,4,5,6,11,12,13,14,15,16,17,18,19];
+export let availableAnalogPins = [23,24,25,26,27,28];
+export let availableDigitalPins = [2,3,4,5,6,11,12,13,14,15,16,17,18,19];
 
 export function generateInoFile(app: App, filePath: string, destination: string | undefined): string {
     const data = extractDestinationAndName(filePath, destination);
@@ -24,10 +24,9 @@ export function generateInoFile(app: App, filePath: string, destination: string 
     return generatedFilePath;
 }
 
-function compile(app:App, fileNode:CompositeGeneratorNode){
-    reportInfo("Pin disponibles pour les actuators:"+ availableActuatorPins)
-    reportInfo("Pin disponibles pour les sensors"+ availableSensorPins)
-    allocatePins(app,availableActuatorPins.length, availableSensorPins.length);
+function compile(app:App, fileNode:CompositeGeneratorNode) {
+    [availableAnalogPins, availableDigitalPins] = updateAvailablePins(app, availableAnalogPins, availableDigitalPins);
+    allocatePins(app,availableAnalogPins, availableDigitalPins);
     fileNode.append(
 	`
 //Wiring code generated from an ArduinoML model
@@ -75,42 +74,59 @@ long `+brick.name+`LastDebounceTime = 0;
 
     }
 
-    function allocatePins(app: App, actuatorsSize: integer, sensorsSize : integer) {
+    function updateAvailablePins(app: App, analogs: integer[], digitals : integer[]) {
+        if (app.pins.length === 0) return [analogs, digitals];
+
+        analogs = [];
+        digitals = [];
+
+        app.pins.forEach(pin => {
+            if (pin.type?.value === 'ANALOG_INPUT' || pin.type?.value === 'ANALOG_OUTPUT') {
+                analogs.push(pin.pin!);
+            } else if (pin.type?.value === 'DIGITAL_INPUT' || pin.type?.value === 'DIGITAL_OUTPUT') {
+                digitals.push(pin.pin!);
+            }
+        });
+        return [analogs, digitals];
+    }
+
+    function allocatePins(app: App, analogs: integer[], digitals : integer[]) {
+        // Loop on defined pins and try to assign them
         app.bricks.forEach(brick => {
             if (brick.pin !== undefined) {
-                if(availableActuatorPins.includes(brick.pin)){
-                    if (isActuator(brick)) {
-                        useActuatorPin(brick.pin);
-                        reportInfo("La brique "+brick.name+' a bien été lié au pin '+brick.pin+ " comme demandé par l'utilisateur")
-                    }else if(isSensor(brick)){
-                        useSensorPin(brick.pin);
-                        reportInfo("La brique "+brick.name+' a bien été lié au pin '+brick.pin+ " comme demandé par l'utilisateur")
-                    }
-                }else{
+                if (analogs.includes(brick.pin) && isActuator(brick)) {
+                    useActuatorPin(brick.pin);
+                    reportInfo("La brique "+brick.name+' a bien été lié au pin '+brick.pin+ " comme demandé par l'utilisateur")
+                } else if (digitals.includes(brick.pin) && isSensor(brick)) {
+                    useSensorPin(brick.pin);
+                    reportInfo("La brique "+brick.name+' a bien été lié au pin '+brick.pin+ " comme demandé par l'utilisateur")
+                } else {
                     reportWarning("Le pin "+ brick.pin+' n a pas pu etre assigné a la brique '+brick.name+' un pin lui a alors été assigné par defaut a un pin disponible')
                     brick.pin = undefined;
                 }
             }
         
         });
+
+        // Loop on undefined pins and assign them
         app.bricks.forEach(brick => {
             if (brick.pin === undefined) {
                 if (isActuator(brick)) {
-                    if (availableActuatorPins.length === 0) {
-                        reportError('Pas assez de pin disponible pour toutes les actuators crées, vous disposez de '+app.bricks.filter(brick => isActuator(brick)).length+' actuator dans votre systeme or vous n avez que '+actuatorsSize+' pin disponible pour les actuator')
+                    if (analogs.length === 0) {
+                        reportError('Pas assez de pin disponible pour toutes les actuators crées, vous disposez de '+app.bricks.filter(brick => isActuator(brick)).length+' actuator dans votre systeme or vous n avez que '+analogs.length+' pin disponible pour les actuator')
                         throw new Error("Erreur : Plus de pins disponibles pour les actuators.");
                     }
                     // Attribuer un pin disponible pour l'actuator
-                    let pinNumber = availableActuatorPins.shift();
+                    let pinNumber = analogs.shift();
                     brick.pin = pinNumber;
                     reportInfo("La brique "+brick.name+' a été lié dynamiquement au pin '+pinNumber)
                 }else if(isSensor(brick)){
-                    if (availableSensorPins.length === 0) {
-                        reportError('Pas assez de pin disponible pour toutes les sensors crées, vous disposez de '+app.bricks.filter(brick => isSensor(brick)).length+' actuator dans votre systeme or vous n avez que '+sensorsSize+' pin disponible pour les actuator')
+                    if (digitals.length === 0) {
+                        reportError('Pas assez de pin disponible pour toutes les sensors crées, vous disposez de '+app.bricks.filter(brick => isSensor(brick)).length+' actuator dans votre systeme or vous n avez que '+digitals.length+' pin disponible pour les actuator')
                         throw new Error("Erreur : Plus de pins disponibles pour les sensors.");
                     }
                     // Attribuer un pin disponible pour le sensor
-                    let pinNumber = availableSensorPins.shift();
+                    let pinNumber = digitals.shift();
                     brick.pin = pinNumber;
                     reportInfo("La brique "+brick.name+' a été lié dynamiquement au pin '+pinNumber)
                 }
@@ -120,16 +136,16 @@ long `+brick.name+`LastDebounceTime = 0;
     }
 
     function useActuatorPin(pinValue: integer) {
-        let index = availableActuatorPins.indexOf(pinValue);
+        let index = availableAnalogPins.indexOf(pinValue);
         if (index !== -1) {
-            availableActuatorPins.splice(index, 1);
+            availableAnalogPins.splice(index, 1);
         }
     }
 
     function useSensorPin(pinValue: integer) {
-        let index = availableSensorPins.indexOf(pinValue);
+        let index = availableDigitalPins.indexOf(pinValue);
         if (index !== -1) {
-            availableSensorPins.splice(index, 1);
+            availableDigitalPins.splice(index, 1);
         }
     }
 

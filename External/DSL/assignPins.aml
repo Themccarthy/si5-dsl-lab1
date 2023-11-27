@@ -1,0 +1,21 @@
+app NewBoard initial state off {
+	pins
+		Pin digital_1 : 1 : DIGITAL_INPUT
+		Pin digital_2 : 2 : DIGITAL_OUTPUT
+		Pin analog_1 : 3 : ANALOG_INPUT
+		Pin analog_2 : 4 : ANALOG_OUTPUT
+	bricks
+		Actuator red_led : 4
+		Sensor button : 1
+	
+	states
+		off {
+			red_led <= LOW
+			button is HIGH => on
+		}
+		on {
+			red_led <= HIGH
+			button is HIGH => off
+		}
+}
+
