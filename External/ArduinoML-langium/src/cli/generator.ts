@@ -25,6 +25,8 @@ export function generateInoFile(app: App, filePath: string, destination: string 
 }
 
 function compile(app:App, fileNode:CompositeGeneratorNode){
+    reportInfo("Pin disponibles pour les actuators:"+ availableActuatorPins)
+    reportInfo("Pin disponibles pour les sensors"+ availableSensorPins)
     allocatePins(app,availableActuatorPins.length, availableSensorPins.length);
     fileNode.append(
 	`
@@ -58,7 +60,6 @@ long `+brick.name+`LastDebounceTime = 0;
 	}
     
 
-
     fileNode.append(`
 	}
 	void loop() {
@@ -80,11 +81,13 @@ long `+brick.name+`LastDebounceTime = 0;
                 if(availableActuatorPins.includes(brick.pin)){
                     if (isActuator(brick)) {
                         useActuatorPin(brick.pin);
+                        reportInfo("La brique "+brick.name+' a bien été lié au pin '+brick.pin+ " comme demandé par l'utilisateur")
                     }else if(isSensor(brick)){
                         useSensorPin(brick.pin);
+                        reportInfo("La brique "+brick.name+' a bien été lié au pin '+brick.pin+ " comme demandé par l'utilisateur")
                     }
                 }else{
-                    reportWarning("le pin "+ brick.pin+' n a pas pu etre assigné a la brique '+brick.name+' un pin lui a alors été assigné par defaut a un pin disponible')
+                    reportWarning("Le pin "+ brick.pin+' n a pas pu etre assigné a la brique '+brick.name+' un pin lui a alors été assigné par defaut a un pin disponible')
                     brick.pin = undefined;
                 }
             }
@@ -98,14 +101,18 @@ long `+brick.name+`LastDebounceTime = 0;
                         throw new Error("Erreur : Plus de pins disponibles pour les actuators.");
                     }
                     // Attribuer un pin disponible pour l'actuator
-                    brick.pin = availableActuatorPins.shift();
+                    let pinNumber = availableActuatorPins.shift();
+                    brick.pin = pinNumber;
+                    reportInfo("La brique "+brick.name+' a été lié dynamiquement au pin '+pinNumber)
                 }else if(isSensor(brick)){
                     if (availableSensorPins.length === 0) {
                         reportError('Pas assez de pin disponible pour toutes les sensors crées, vous disposez de '+app.bricks.filter(brick => isSensor(brick)).length+' actuator dans votre systeme or vous n avez que '+sensorsSize+' pin disponible pour les actuator')
                         throw new Error("Erreur : Plus de pins disponibles pour les sensors.");
                     }
                     // Attribuer un pin disponible pour le sensor
-                    brick.pin = availableSensorPins.shift();
+                    let pinNumber = availableSensorPins.shift();
+                    brick.pin = pinNumber;
+                    reportInfo("La brique "+brick.name+' a été lié dynamiquement au pin '+pinNumber)
                 }
               
             }
@@ -126,16 +133,23 @@ long `+brick.name+`LastDebounceTime = 0;
         }
     }
 
-    function reportError(errorMessage: string, logFilePath: string = 'error.log'): void {
+    function reportError(errorMessage: string, logFilePath: string = 'aml.log'): void {
         const timestamp = new Date().toISOString();
         const logMessage = `${timestamp} - Error: ${errorMessage}\n`;
     
         fs.appendFileSync(logFilePath, logMessage, 'utf8');
     }
 
-    function reportWarning(errorMessage: string, logFilePath: string = 'error.log'): void {
+    function reportInfo(message: string, logFilePath: string = 'aml.log'): void {
         const timestamp = new Date().toISOString();
-        const logMessage = `${timestamp} - Warning: ${errorMessage}\n`;
+        const logMessage = `${timestamp} - Info: ${message}\n`;
+    
+        fs.appendFileSync(logFilePath, logMessage, 'utf8');
+    }
+
+    function reportWarning(message: string, logFilePath: string = 'aml.log'): void {
+        const timestamp = new Date().toISOString();
+        const logMessage = `${timestamp} - Warning: ${message}\n`;
     
         fs.appendFileSync(logFilePath, logMessage, 'utf8');
     }
