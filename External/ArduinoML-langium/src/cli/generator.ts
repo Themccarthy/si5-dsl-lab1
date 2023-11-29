@@ -6,8 +6,7 @@ import { extractDestinationAndName } from './cli-util.js';
 import { App, State, Action, Transition, Actuator, Sensor, isSensor, isActuator} from '../language/generated/ast.js';
 import { integer } from 'vscode-languageserver';
 
-let availableActuatorPins = [23,24,25,26,27,28];
-let availableSensorPins = [2,3,4,5,6,11,12,13,14,15,16,17,18,19];
+let availablePins = [8,9,10,11,12];
 
 export function generateInoFile(app: App, filePath: string, destination: string | undefined): string {
     const data = extractDestinationAndName(filePath, destination);
@@ -25,9 +24,8 @@ export function generateInoFile(app: App, filePath: string, destination: string 
 }
 
 function compile(app:App, fileNode:CompositeGeneratorNode){
-    reportInfo("Pin disponibles pour les actuators:"+ availableActuatorPins)
-    reportInfo("Pin disponibles pour les sensors"+ availableSensorPins)
-    allocatePins(app,availableActuatorPins.length, availableSensorPins.length);
+    reportInfo("Pin disponibles pour les brique:"+ availablePins)
+    allocatePins(app,availablePins.length);
     fileNode.append(
 	`
 //Wiring code generated from an ArduinoML model
@@ -75,17 +73,12 @@ long `+brick.name+`LastDebounceTime = 0;
 
     }
 
-    function allocatePins(app: App, actuatorsSize: integer, sensorsSize : integer) {
+    function allocatePins(app: App, pinSize: integer) {
         app.bricks.forEach(brick => {
             if (brick.pin !== undefined) {
-                if(availableActuatorPins.includes(brick.pin)){
-                    if (isActuator(brick)) {
-                        useActuatorPin(brick.pin);
-                        reportInfo("La brique "+brick.name+' a bien été lié au pin '+brick.pin+ " comme demandé par l'utilisateur")
-                    }else if(isSensor(brick)){
-                        useSensorPin(brick.pin);
-                        reportInfo("La brique "+brick.name+' a bien été lié au pin '+brick.pin+ " comme demandé par l'utilisateur")
-                    }
+                if(availablePins.includes(brick.pin)){
+                    usePin(brick.pin);
+                    reportInfo("La brique "+brick.name+' a bien été lié au pin '+brick.pin+ " comme demandé par l'utilisateur")
                 }else{
                     reportWarning("Le pin "+ brick.pin+' n a pas pu etre assigné a la brique '+brick.name+' un pin lui a alors été assigné par defaut a un pin disponible')
                     brick.pin = undefined;
@@ -95,41 +88,24 @@ long `+brick.name+`LastDebounceTime = 0;
         });
         app.bricks.forEach(brick => {
             if (brick.pin === undefined) {
-                if (isActuator(brick)) {
-                    if (availableActuatorPins.length === 0) {
-                        reportError('Pas assez de pin disponible pour toutes les actuators crées, vous disposez de '+app.bricks.filter(brick => isActuator(brick)).length+' actuator dans votre systeme or vous n avez que '+actuatorsSize+' pin disponible pour les actuator')
-                        throw new Error("Erreur : Plus de pins disponibles pour les actuators.");
-                    }
-                    // Attribuer un pin disponible pour l'actuator
-                    let pinNumber = availableActuatorPins.shift();
-                    brick.pin = pinNumber;
-                    reportInfo("La brique "+brick.name+' a été lié dynamiquement au pin '+pinNumber)
-                }else if(isSensor(brick)){
-                    if (availableSensorPins.length === 0) {
-                        reportError('Pas assez de pin disponible pour toutes les sensors crées, vous disposez de '+app.bricks.filter(brick => isSensor(brick)).length+' actuator dans votre systeme or vous n avez que '+sensorsSize+' pin disponible pour les actuator')
-                        throw new Error("Erreur : Plus de pins disponibles pour les sensors.");
-                    }
-                    // Attribuer un pin disponible pour le sensor
-                    let pinNumber = availableSensorPins.shift();
-                    brick.pin = pinNumber;
-                    reportInfo("La brique "+brick.name+' a été lié dynamiquement au pin '+pinNumber)
+                if (availablePins.length === 0) {
+                    reportError('Pas assez de pin disponible pour toutes les brique crées, vous disposez de '+app.bricks.length+' briques dans votre systeme or vous n avez que '+pinSize+' pin disponible pour les actuator')
+                    throw new Error("Erreur : Plus de pins disponibles pour les sensors.");
                 }
-              
+                // Attribuer un pin disponible pour le sensor
+                let pinNumber = availablePins.shift();
+                brick.pin = pinNumber;
+                reportInfo("La brique "+brick.name+' a été lié dynamiquement au pin '+pinNumber)
             }
+              
+            
         });
     }
 
-    function useActuatorPin(pinValue: integer) {
-        let index = availableActuatorPins.indexOf(pinValue);
+    function usePin(pinValue: integer) {
+        let index = availablePins.indexOf(pinValue);
         if (index !== -1) {
-            availableActuatorPins.splice(index, 1);
-        }
-    }
-
-    function useSensorPin(pinValue: integer) {
-        let index = availableSensorPins.indexOf(pinValue);
-        if (index !== -1) {
-            availableSensorPins.splice(index, 1);
+            availablePins.splice(index, 1);
         }
     }
 
@@ -184,13 +160,37 @@ long `+brick.name+`LastDebounceTime = 0;
 		fileNode.append(`
 					digitalWrite(`+action.actuator.ref?.pin+`,`+action.value.value+`);`)
 	}
+    /*
 
 	function compileTransition(transition: Transition, fileNode:CompositeGeneratorNode) {
 		fileNode.append(`
-		 			`+transition.sensor.ref?.name+`BounceGuard = millis() - `+transition.sensor.ref?.name+`LastDebounceTime > debounce;
+		 			`+transition.sensors.ref?.name+`BounceGuard = millis() - `+transition.sensor.ref?.name+`LastDebounceTime > debounce;
 					if( digitalRead(`+transition.sensor.ref?.pin+`) == `+transition.value.value+` && `+transition.sensor.ref?.name+`BounceGuard) {
 						`+transition.sensor.ref?.name+`LastDebounceTime = millis();
 						currentState = `+transition.next.ref?.name+`;
 					}
 		`)
 	}
+    */   
+
+
+    function compileTransition(transition: Transition, fileNode:CompositeGeneratorNode) {
+        fileNode.append(`
+		 			`+transition.sensorConditions.at(0)?.sensor.ref?.name+`BounceGuard = millis() - `+transition.sensorConditions.at(0)?.sensor.ref?.name+`LastDebounceTime > debounce;`);
+        let ifCase : string='';
+        transition.sensorConditions.forEach((condition, index) => {
+            ifCase += `digitalRead(${condition.sensor.ref?.pin}) == ${condition.value.value}`;
+            if (index < transition.sensorConditions.length - 1) {
+                ifCase += ` && `;
+            }
+        });
+        fileNode.append(`
+                    if( ${ifCase} && `+transition.sensorConditions.at(0)?.sensor.ref?.name+`BounceGuard) {
+                        `+transition.sensorConditions.at(0)?.sensor.ref?.name+`LastDebounceTime = millis();
+                        currentState = `+transition.next.ref?.name+`;
+                    }
+        `)
+    
+    // ajouter un validateur pour pas mettre le meme bouton dans une condition
+		
+    }   

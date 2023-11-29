@@ -1,7 +1,7 @@
 grammar ArduinoMlB
 
 entry App:
-    'app' name=ID 'initial' 'state' initial=[State:ID]
+	'app' name=ID 'initial' 'state' initial=[State:ID]
 	'{'
 		'bricks'
 		bricks+=Brick
@@ -13,18 +13,18 @@ entry App:
 	'}';
 
 Brick:
-    (Actuator | Sensor);
+	(Actuator | Sensor);
 
 Actuator:
-    {infer Actuator}
+	{infer Actuator}
 	'Actuator' name=ID (':' pin=INT)?;
 
 Sensor:
-    {infer Sensor}
+	{infer Sensor}
 	'Sensor'  name=ID (':' pin=INT)?;
 
 State:
-    name=ID '{'
+	name=ID '{'
 		actions+=Action
 		(actions+=Action)* 
 		transition=Transition
@@ -32,13 +32,19 @@ State:
 
 
 Action:
-    actuator=[Actuator:ID] '<=' value=Signal;
+	actuator=[Actuator:ID] '<=' value=Signal;
+
 
 Transition:
-    sensor=[Sensor:ID] 'is' value=Signal '=>' next=[State:ID];
+	sensorConditions+=SensorCondition ('&&' sensorConditions+=SensorCondition)* '=>' next=[State:ID];
+
+SensorCondition:
+	sensor=[Sensor:ID] 'is' value=Signal;
+
+
 
 Signal:
-    value=(HIGH | LOW);
+	value=(HIGH | LOW);
 terminal HIGH: 'HIGH';
 terminal LOW: 'LOW';
 
