@@ -34,14 +34,17 @@ State:
 Action:
 	actuator=[Actuator:ID] '<=' value=Signal;
 
-
 Transition:
-	sensorConditions+=SensorCondition ('&&' sensorConditions+=SensorCondition)* '=>' next=[State:ID];
+	sensorCondition1=SensorCondition1 ( sensorConditions+=SensorCondition)* '=>' next=[State:ID];
 
-SensorCondition:
+SensorCondition1:
 	sensor=[Sensor:ID] 'is' value=Signal;
 
+SensorCondition:
+	logicalOperator=LogicalOperator sensor=[Sensor:ID] 'is' value=Signal;
 
+LogicalOperator:
+	value=('&&' | '||');
 
 Signal:
 	value=(HIGH | LOW);

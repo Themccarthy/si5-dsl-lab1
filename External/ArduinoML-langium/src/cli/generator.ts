@@ -176,17 +176,17 @@ long `+brick.name+`LastDebounceTime = 0;
 
     function compileTransition(transition: Transition, fileNode:CompositeGeneratorNode) {
         fileNode.append(`
-		 			`+transition.sensorConditions.at(0)?.sensor.ref?.name+`BounceGuard = millis() - `+transition.sensorConditions.at(0)?.sensor.ref?.name+`LastDebounceTime > debounce;`);
+		 			`+transition.sensorCondition1.sensor.ref?.name+`BounceGuard = millis() - `+transition.sensorCondition1.sensor.ref?.name+`LastDebounceTime > debounce;`);
         let ifCase : string='';
-        transition.sensorConditions.forEach((condition, index) => {
-            ifCase += `digitalRead(${condition.sensor.ref?.pin}) == ${condition.value.value}`;
-            if (index < transition.sensorConditions.length - 1) {
-                ifCase += ` && `;
-            }
+        ifCase += `digitalRead(${transition.sensorCondition1.sensor.ref?.pin}) == ${transition.sensorCondition1.value.value}`;
+        transition.sensorConditions.forEach((condition) => {
+            ifCase += ` ${condition.logicalOperator.value} `;
+            ifCase += `digitalRead(${condition.sensor.ref?.pin}) == ${condition.value.value} `;
+        
         });
         fileNode.append(`
-                    if( ${ifCase} && `+transition.sensorConditions.at(0)?.sensor.ref?.name+`BounceGuard) {
-                        `+transition.sensorConditions.at(0)?.sensor.ref?.name+`LastDebounceTime = millis();
+                    if( ${ifCase} && `+transition.sensorCondition1.sensor.ref?.name+`BounceGuard) {
+                        `+transition.sensorCondition1.sensor.ref?.name+`LastDebounceTime = millis();
                         currentState = `+transition.next.ref?.name+`;
                     }
         `)
