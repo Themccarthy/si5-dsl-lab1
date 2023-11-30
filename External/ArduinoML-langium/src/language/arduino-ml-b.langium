@@ -13,7 +13,7 @@ entry App:
 	'}';
 
 Brick:
-	(Actuator | Sensor);
+	(Actuator | Sensor | Screen);
 
 Actuator:
 	{infer Actuator}
@@ -23,16 +23,23 @@ Sensor:
 	{infer Sensor}
 	'Sensor'  name=ID (':' pin=INT)?;
 
+Screen:
+	{infer Screen}
+	'Screen'  name=ID (':' bus=INT)?;
+
+
 State:
 	name=ID '{'
-		actions+=Action
-		(actions+=Action)* 
-		transition=Transition
-	'}';
+        actions+=(ActuatorAction | ScreenAction)
+        (actions+=(ActuatorAction | ScreenAction))* 
+        transition=Transition
+    '}';
 
-
-Action:
+ActuatorAction:
 	actuator=[Actuator:ID] '<=' value=Signal;
+
+ScreenAction:
+	screen=[Screen:ID] '<=' value=ID;
 
 Transition:
 	sensorCondition1=SensorCondition1 ( sensorConditions+=SensorCondition)* '=>' next=[State:ID];
