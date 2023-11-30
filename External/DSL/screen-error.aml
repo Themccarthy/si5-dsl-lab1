@@ -9,7 +9,7 @@ app RedButton initial state off {
 		off {
 			red_led <= LOW
 			red_led2 <= LOW
-            screen <= eteint 
+            screen <=  anticonstitutionnellement
 			button is HIGH => on 
 		}
 		on {

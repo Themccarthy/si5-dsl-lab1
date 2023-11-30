@@ -16,7 +16,7 @@ app RedButton initial state off {
 			red_led <= HIGH
 			red_led2 <= HIGH
 			screen <= allume
-			button is HIGH => off
+			button is LOW => off
 		}
 }
 

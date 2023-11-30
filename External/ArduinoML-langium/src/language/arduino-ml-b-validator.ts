@@ -1,6 +1,6 @@
 import type { ValidationChecks, ValidationAcceptor } from 'langium';
 import type { ArduinoMlBServices } from './arduino-ml-b-module.js';
-import { ArduinoMlBAstType, Sensor, Transition } from './generated/ast.js';
+import { ArduinoMlBAstType, Sensor, Transition, ScreenAction } from './generated/ast.js';
 
 /**
  * Register custom validation checks.
@@ -9,7 +9,8 @@ export function registerValidationChecks(services: ArduinoMlBServices) {
     const registry = services.validation.ValidationRegistry;
     const validator = services.validation.ArduinoMlBValidator;
     const checks: ValidationChecks<ArduinoMlBAstType> = {
-        Transition: validator.checkUniqueSensorsInTransition 
+        Transition: validator.checkUniqueSensorsInTransition,
+        ScreenAction: validator.checkScreenActionLength
     
     };
     registry.register(checks, validator);
@@ -43,6 +44,13 @@ export class ArduinoMlBValidator {
                     }
                 }
             });
+        }
+    }
+
+
+    checkScreenActionLength(screenAction: ScreenAction, accept: ValidationAcceptor): void {
+        if (screenAction.value && screenAction.value.length > 16) {
+            accept('error', 'Le texte a afficher sur l ecran ne doit pas dépasser 16 caractères.', { node: screenAction, property: 'value' });
         }
     }
 
