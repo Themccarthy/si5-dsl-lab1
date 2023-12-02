@@ -5,6 +5,7 @@ import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick;
@@ -16,7 +17,6 @@ import java.util.*;
 public class Model {
     private Map<String, Brick> brickMap = new HashMap<>();
     private Map<String, State> stateMap = new HashMap<>();
-    private Map<String, Action> actionMap = new HashMap<>();
     private State initialState = new State();
 
     private DSLBinding binding;
@@ -55,11 +55,10 @@ public class Model {
         return (Actuator) brickMap.getOrDefault(name, null);
     }
 
-    public void createState(String name, List<Action> actions, Transition transition) {
+    public void createState(String name, List<Action> actions) {
         State state = new State();
         state.setName(name);
         state.setActions(actions);
-        state.setTransition(transition);
         stateMap.put(name, state);
 
         bindVariable(name, state);
@@ -69,11 +68,10 @@ public class Model {
         return stateMap.getOrDefault(name, null);
     }
 
-    public void createTransition(State baseState, State destinationState, Sensor sensor, SIGNAL value) {
+    public void createTransition(State baseState, State destinationState, List<TransitionCondition> transitionConditions) {
         Transition transition = new Transition();
         transition.setNext(destinationState);
-        transition.setSensor(sensor);
-        transition.setValue(value);
+        transition.addAllTransitionConditions(transitionConditions);
         baseState.setTransition(transition);
     }
 
