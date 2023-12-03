@@ -7,10 +7,12 @@ public class PinAllocator {
     private static PinAllocator instance;
     private List<Integer> availableAnalogPins = new ArrayList<>();
     private List<Integer> availableDigitalPins =  new ArrayList<>();
+    private List<Integer> availableBusPins =  new ArrayList<>();
 
     public PinAllocator() {
         availableAnalogPins.addAll(List.of(23,24,25,26,27,28));
         availableDigitalPins.addAll(List.of(2,3,4,5,6,11,12,13,14,15,16,17,18,19));
+        availableBusPins.addAll(BusPinManager.instance().getBusList());
     }
 
     public static PinAllocator instance() {
@@ -28,6 +30,10 @@ public class PinAllocator {
         return availableDigitalPins;
     }
 
+    public List<Integer> getAvailableBusPins() {
+        return availableBusPins;
+    }
+
     public void deallocateAnalogPin(String brickName, Integer pinNumber) {
         if (!availableAnalogPins.contains(pinNumber)) {
             availableAnalogPins.add(pinNumber);
@@ -38,6 +44,13 @@ public class PinAllocator {
     public void deallocateDigitalPin(String brickName, Integer pinNumber) {
         if (!availableDigitalPins.contains(pinNumber)) {
             availableDigitalPins.add(pinNumber);
+            pinDeallocationInfo(brickName, pinNumber);
+        }
+    }
+
+    public void deallocateBusPin(String brickName, Integer pinNumber) {
+        if (!availableBusPins.contains(pinNumber)) {
+            availableBusPins.add(pinNumber);
             pinDeallocationInfo(brickName, pinNumber);
         }
     }
@@ -60,6 +73,15 @@ public class PinAllocator {
         return pinNumber;
     }
 
+    public Integer allocateBusPin(String brickName, Integer pinNumber) throws Exception {
+        if (availableBusPins.isEmpty() || !availableBusPins.contains(pinNumber)) {
+            pinAllocationError(brickName, String.valueOf(pinNumber), availableBusPins);
+        }
+        availableBusPins.remove(pinNumber);
+        pinAllocationInfo(brickName, pinNumber);
+        return pinNumber;
+    }
+
     public Integer allocateAnalogPin(String brickName) throws Exception {
         if (availableAnalogPins.isEmpty()) {
             pinAllocationError(brickName, "", availableAnalogPins);
@@ -72,6 +94,13 @@ public class PinAllocator {
             pinAllocationError(brickName, "", availableDigitalPins);
         }
         return allocateDigitalPin(brickName, availableDigitalPins.get(0));
+    }
+
+    public Integer allocateBusPin(String brickName) throws Exception {
+        if (availableBusPins.isEmpty()) {
+            pinAllocationError(brickName, "", availableBusPins);
+        }
+        return allocateBusPin(brickName, availableBusPins.get(0));
     }
 
     public void pinDeallocationInfo(String brickName, Integer pinDeallocated) {

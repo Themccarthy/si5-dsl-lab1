@@ -1,0 +1,9 @@
+Add/Update bus number 1 with pins [2, 3, 4, 5, 6, 7, 8]
+Add/Update bus number 2 with pins [9, 10, 11, 12, 13, 14, 15]
+Add/Update bus number 3 with pins [16, 17, 18, 19, 20, 21, 22]
+Allocate pin 2 for brick button
+Allocate pin 3 for brick button
+Deallocate pin 3 for brick button
+
+Cannot allocate pin 2 for brick button
+Pins available are: [4, 5, 6, 11, 12, 13, 14, 15, 16, 17, 18, 19, 3]

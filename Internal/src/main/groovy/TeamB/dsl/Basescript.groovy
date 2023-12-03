@@ -2,13 +2,24 @@ package TeamB.dsl
 
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ActuatorAction
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.LogicalCondition
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ScreenAction
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Screen
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor
 
 abstract class Basescript extends Script {
+
+    def bus(Integer busNumber) {
+        [pins : { ps ->
+            String pinsUsed = ps
+            List<Integer> pins = pinsUsed.replaceAll("[^\\d,]", "").split(",") as List<Integer>
+            BusPinManager.instance().addBusPins(busNumber, pins);
+        }]
+    }
 
     def sensor(String sensorName) {
         // By default auto allocate pin
@@ -40,16 +51,40 @@ abstract class Basescript extends Script {
         }]
     }
 
+    def screen(String screenName) {
+        // By default auto allocate pin
+        Integer pinNumber = PinAllocator.instance().allocateBusPin(screenName)
+        ((DSLBinding) this.getBinding()).getModel().createScreen(screenName, pinNumber)
+
+        [bus : { b ->
+            // In case the user specifies the pin, we deallocate the pin auto allocated before
+            PinAllocator.instance().deallocateBusPin(screenName, pinNumber)
+
+            // Then we allocate the pin specified by the user
+            PinAllocator.instance().allocateBusPin(screenName, Integer.valueOf(b))
+            ((DSLBinding) this.getBinding()).getModel().createScreen(screenName, b)
+        }]
+    }
+
     def state(String name) {
         List<Action> actions = new ArrayList<>();
         ((DSLBinding) this.getBinding()).getModel().createState(name, actions)
 
         def closure
-        closure = { actuator ->
+        closure = { analogBrick ->
             [turn : { signal ->
-                Action action = new Action()
-                action.setActuator(((DSLBinding) this.getBinding()).getModel().getActuator(actuator))
+                ActuatorAction action = new ActuatorAction()
+                action.setActuator(((DSLBinding) this.getBinding()).getModel().getActuator(analogBrick))
                 action.setValue(signal)
+                actions.add(action)
+                [and: closure]
+            },
+            display : { content ->
+                Screen screen = ((DSLBinding) this.getBinding()).getModel().getScreen(analogBrick)
+                ScreenValidator.instance().verifyScreenContent(screen, content)
+                ScreenAction action = new ScreenAction()
+                action.setScreen(screen)
+                action.setContent(content)
                 actions.add(action)
                 [and: closure]
             }]

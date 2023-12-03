@@ -7,10 +7,7 @@ import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.*;
 
 import java.util.*;
 
@@ -53,6 +50,20 @@ public class Model {
 
     public Actuator getActuator(String name) {
         return (Actuator) brickMap.getOrDefault(name, null);
+    }
+
+    public void createScreen(String name, Integer bus) {
+        Screen screen = new Screen();
+        screen.setName(name);
+        screen.setPin(bus);
+        screen.setBusPins(BusPinManager.instance().getBusPins(bus));
+        brickMap.put(name, screen);
+
+        bindVariable(name, screen);
+    }
+
+    public Screen getScreen(String name) {
+        return (Screen) brickMap.getOrDefault(name, null);
     }
 
     public void createState(String name, List<Action> actions) {
