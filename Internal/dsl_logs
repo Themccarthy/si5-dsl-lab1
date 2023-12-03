@@ -1,0 +1,9 @@
+Allocate pin 2 for brick button
+Deallocate pin 2 for brick button
+Allocate pin 2 for brick button
+Allocate pin 23 for brick led
+Deallocate pin 23 for brick led
+Allocate pin 23 for brick led
+Allocate pin 24 for brick buzzer
+Deallocate pin 24 for brick buzzer
+Allocate pin 24 for brick buzzer

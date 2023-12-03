@@ -1,5 +1,5 @@
-sensor "button" pin 9
-actuator "led" pin 12
+sensor "button" pin 2
+actuator "led" pin 23
 
 state "on" trigger "led" turn high
 state "off" trigger "led" turn low

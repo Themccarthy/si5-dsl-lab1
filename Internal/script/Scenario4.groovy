@@ -1,6 +1,6 @@
-sensor "button" pin 9
-actuator "led" pin 12
-actuator "buzzer" pin 11
+sensor "button" pin 2
+actuator "led" pin 23
+actuator "buzzer" pin 24
 
 state "buzz" trigger "buzzer" turn high and "led" turn low
 state "led" trigger "buzzer" turn low and "led" turn high

@@ -61,6 +61,11 @@ class DSL {
         binding.setScript(script)
         script.setBinding(binding)
 
-        script.run()
+        try {
+            script.run()
+        } catch (Exception e) {
+            println(e.getMessage())
+            throw new Exception(e.getMessage())
+        }
     }
 }
