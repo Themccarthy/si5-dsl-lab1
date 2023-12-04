@@ -82,16 +82,46 @@ export class ArduinoMlBValidator {
         if (app.bricks.filter(brick=> isScreen(brick)).length > numberBus) {
             accept('error','Pas assez de pin disponible pour toutes les ecrans crées, vous disposez de '+app.bricks.filter(brick=> isScreen(brick)).length+' ecran dans votre systeme or vous n avez que '+numberBus+' bus disponible pour les ecran', { node: app, property: 'bricks' });
         }
+
+        let bus : integer[]
+        if(app.bus!== undefined && app.bus.length>0){
+            bus = app.bus.map(b => b.number);
+        }else{
+            bus = [1,2,3];
+        }
+
+
+        app.bricks.forEach( screen => {
+            if ( isScreen(screen) &&  screen.bus!=undefined && !bus.includes(screen.bus) ) {
+                accept('error', 'Le bus n existe pas', { node: screen, property: 'bus' });
+            }
+        })
+
+        const compteur: { [key: number]: number } = {};
+        for (const screen of app.bricks) {
+            if ( isScreen(screen) && screen.bus!==undefined && compteur[screen.bus]) {
+                compteur[screen.bus]++;
+                if (compteur[screen.bus] > 1) {
+                    accept('error', 'Le bus est deja utlisé par une autre brique', { node: screen, property: 'bus' });
+                }
+            } else if(isScreen(screen) && screen.bus!==undefined){
+                compteur[screen.bus] = 1;
+            }
+        }
+
+
+        this.pins.clear();
+        this.correctBus.clear();
     }
 
     checkPins(pin: Pin, accept: ValidationAcceptor): void {
         // Check if pin number is not already used
         let pinNumbers = Array.from(this.pins.keys()).map(item => item.pin.toString());
-        if (pinNumbers.includes(pin.pin!.toString())) accept('error', 'Pin number already used.', { node: pin, property: 'pin' });
+        if (pinNumbers.includes(pin.pin!.toString())) accept('error', 'Ce numero de pin est deja utilisé par un autre pin', { node: pin, property: 'pin' });
 
         // Check if pin name is not already used
         let pinNames = Array.from(this.pins.keys()).map(item => item.name);
-        if (pinNames.includes(pin.name!)) accept('error', 'Pin name already used.', { node: pin, property: 'name' });
+        if (pinNames.includes(pin.name!)) accept('error', 'Ce nom de pin est deja utilisé par un autre pin', { node: pin, property: 'name' });
 
         // If all checks passed, add pin to the list
         this.pins.set(new SimplePin(pin.pin!.toString(), pin.name!, pin.type!.value), undefined);
@@ -100,7 +130,7 @@ export class ArduinoMlBValidator {
     checkBus(bus: Bus, accept: ValidationAcceptor): void {
         // Check if bus number is not already used
         let busNumbers = Array.from(this.correctBus.keys()).map(item => item.number.toString());
-        if (busNumbers.includes(bus.number!.toString())) accept('error', 'Bus number already used.', { node: bus, property: 'number' });
+        if (busNumbers.includes(bus.number!.toString())) accept('error', 'Ce numero de bus est deja utilisé par un autre bus', { node: bus, property: 'number' });
 
         // Check bus pins 
         if (bus.pins.length!=7) accept('error', 'Les bus doivent posséder 7 pins', { node: bus, property: 'pins' });
@@ -132,12 +162,12 @@ export class ArduinoMlBValidator {
                 // Check if brick bus is correct
                 if(brick.pin !== undefined){
                     let pinNumbers = Array.from(this.pins.keys()).map(item => item.pin);
-                    if (pinNumbers.length !== 0 && !pinNumbers.includes(brick.pin.toString())) accept('error', 'Brick pin is not defined.', { node: brick, property: 'pin' });
+                    if (pinNumbers.length !== 0 && !pinNumbers.includes(brick.pin.toString())) accept('error', 'Le pin n existe pas', { node: brick, property: 'pin' });
                 }
                 
                 // Check if brick pin is unique
                 if (!hasCurrentBrick && allPinsDefined.some(item => brick.pin && item[0].pin === brick.pin.toString())) 
-                    accept('error', 'Brick pin already used.', { node: brick, property: 'pin' });
+                    accept('error', 'Le pin est deja utlisé par une autre brique', { node: brick, property: 'pin' });
     
                 // Check if brick pin type is correct
                 let currentPin = Array.from(this.pins.keys()).find(item =>  brick.pin && item.pin === brick.pin.toString());
@@ -146,39 +176,10 @@ export class ArduinoMlBValidator {
                     (currentPin.type !== 'DIGITAL_INPUT' && currentPin.type !== 'DIGITAL_OUTPUT'))||
                     ( isActuator(brick) && 
                     (currentPin.type !== 'DIGITAL_INPUT' && currentPin.type !== 'DIGITAL_OUTPUT')))) {
-                    accept('error', 'Brick is assigned to wrong Pin (invalid type)', { node: brick, property: 'pin' });
+                    accept('error', 'Le brique est assigné au mauvais type de pin (type invalide)', { node: brick, property: 'pin' });
                 }
                 // If all checks passed, add brick to the pin map
                 this.pins.set(currentPin!, brick);
-    
-            }else if(isScreen(brick)){
-                 // Define which list to use
-                 if (this.correctBus.size === 0) {
-                    availableBus.map(subArray => 
-                        subArray.map(str => parseInt(str))
-                    ).forEach(item => this.correctBus.set(new SimpleBus(item,availableBus.indexOf(item.map(pin => pin.toString()))+1), undefined));
-                }
-
-    
-                // Check if too many bricks are defined
-                let allBusDefined = Array.from(this.correctBus.entries()).filter(item => item[1] !== undefined);
-                let hasCurrentBrick = Array.from(this.correctBus.values()).some(item => item?.name === brick.name);      
-           
-                // Check if brick pin is correct
-                if(!brick.bus === undefined){
-                    let busNumbers = Array.from(this.correctBus.keys()).map(item => item.number);
-                    if (busNumbers.length !== 0 && busNumbers.filter(number => number <= this.correctBus.values.length).length > 0 ) accept('error', 'Brick bus is not defined.', { node: brick, property: 'bus' });
-                }   
-                // Check if brick pin is unique
-                if (!hasCurrentBrick && allBusDefined.some(item => brick.bus && item[0].number === brick.bus)) 
-                    accept('error', 'Brick bus already used.', { node: brick, property: 'bus' });
-    
-    
-                // Check if brick pin type is correct
-                let currentBus = Array.from(this.correctBus.keys()).find(item =>  brick.bus && item.number === brick.bus);
-                
-                // If all checks passed, add brick to the pin map
-                this.correctBus.set(currentBus!, brick);
             }
         }
         

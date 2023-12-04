@@ -3,6 +3,8 @@ app RedButton initial state off {
 		Actuator red_led : 9
         Actuator red_led2 : 9
 		Sensor button : 12
+		Screen screen2 : 1
+		Screen screen : 1
 	
 	states
 		off {
