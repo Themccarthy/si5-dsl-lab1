@@ -1,13 +1,13 @@
 package jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator;
 
 
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.*;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick;
+
+import java.util.List;
 
 /**
  * Quick and dirty visitor to support the generation of Wiring code
@@ -117,14 +117,39 @@ public class ToWiring extends Visitor<StringBuffer> {
 			return;
 		}
 		if(context.get("pass") == PASS.TWO) {
-			String sensorName = transition.getSensor().getName();
-			w(String.format("\t\t\t%sBounceGuard = millis() - %sLastDebounceTime > debounce;\n",
-					sensorName, sensorName));
-			w(String.format("\t\t\tif( digitalRead(%d) == %s && %sBounceGuard) {\n",
-					transition.getSensor().getPin(), transition.getValue(), sensorName));
-			w(String.format("\t\t\t\t%sLastDebounceTime = millis();\n", sensorName));
+			List<TransitionCondition> transitionConditions = transition.getTransitionConditions();
+
+			for (TransitionCondition transitionCondition : transitionConditions) {
+				if (transitionCondition.getLogicalCondition().equals(LogicalCondition.NONE)) {
+					String sensorName = transitionCondition.getSensor().getName();
+					w(String.format("\t\t\t%sBounceGuard = millis() - %sLastDebounceTime > debounce;\n",
+							sensorName, sensorName));
+				}
+			}
+
+			w("\t\t\tif(");
+
+			for (TransitionCondition transitionCondition : transitionConditions) {
+				if (transitionCondition.getLogicalCondition().equals(LogicalCondition.NONE)) {
+					w(String.format("digitalRead(%d) == %s && %sBounceGuard ",
+							transitionCondition.getSensor().getPin(), transitionCondition.getValue(), transitionCondition.getSensor().getName()));
+				}
+				else {
+					w(String.format("%s ", transitionCondition.getLogicalCondition().getOperator()));
+				}
+			}
+
+			w(") {\n");
+
+			for (TransitionCondition transitionCondition : transitionConditions) {
+				if (transitionCondition.getLogicalCondition().equals(LogicalCondition.NONE)) {
+					w(String.format("\t\t\t\t%sLastDebounceTime = millis();\n", transitionCondition.getSensor().getName()));
+				}
+			}
+
 			w("\t\t\t\tcurrentState = " + transition.getNext().getName() + ";\n");
 			w("\t\t\t}\n");
+
 			return;
 		}
 	}

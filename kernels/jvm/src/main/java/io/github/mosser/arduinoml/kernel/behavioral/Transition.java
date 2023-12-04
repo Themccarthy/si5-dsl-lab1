@@ -6,11 +6,13 @@ import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitor;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Transition implements Visitable {
 
 	private State next;
-	private Sensor sensor;
-	private SIGNAL value;
+	private List<TransitionCondition> transitionConditions = new ArrayList<>();
 
 
 	public State getNext() {
@@ -21,20 +23,21 @@ public class Transition implements Visitable {
 		this.next = next;
 	}
 
-	public Sensor getSensor() {
-		return sensor;
+	public List<TransitionCondition> getTransitionConditions() {
+		return transitionConditions;
 	}
 
-	public void setSensor(Sensor sensor) {
-		this.sensor = sensor;
+	public TransitionCondition getTransitionConditionAtIndex(int index) {
+		if (transitionConditions.isEmpty()) return null;
+		return transitionConditions.get(index);
 	}
 
-	public SIGNAL getValue() {
-		return value;
+	public void addTransitionCondition(TransitionCondition transitionCondition) {
+		this.transitionConditions.add(transitionCondition);
 	}
 
-	public void setValue(SIGNAL value) {
-		this.value = value;
+	public void addAllTransitionConditions(List<TransitionCondition> transitionConditions) {
+		this.transitionConditions.addAll(transitionConditions);
 	}
 
 	@Override
