@@ -1,6 +1,6 @@
-sensor "button1" pin 9
-sensor "button2" pin 10
-actuator "buzzer" pin 11
+sensor "button1" pin 2
+sensor "button2" pin 3
+actuator "buzzer" pin 23
 
 state "on" trigger "buzzer" turn high
 state "off" trigger "buzzer" turn low

@@ -4,20 +4,40 @@ import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.LogicalCondition
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor
 
 abstract class Basescript extends Script {
-    def sensor(String name) {
-        [pin : { p -> ((DSLBinding) this.getBinding()).getModel().createSensor(name, p) }]
+
+    def sensor(String sensorName) {
+        // By default auto allocate pin
+        Integer pinNumber = PinAllocator.instance().allocateDigitalPin(sensorName)
+        ((DSLBinding) this.getBinding()).getModel().createSensor(sensorName, pinNumber)
+
+        [pin : { p ->
+            // In case the user specifies the pin, we deallocate the pin auto allocated before
+            PinAllocator.instance().deallocateDigitalPin(sensorName, pinNumber)
+
+            // Then we allocate the pin specified by the user
+            PinAllocator.instance().allocateDigitalPin(sensorName, Integer.valueOf(p))
+            ((DSLBinding) this.getBinding()).getModel().createSensor(sensorName, p)
+        }]
     }
 
-    def actuator(String name) {
-        [pin : { p -> ((DSLBinding) this.getBinding()).getModel().createActuator(name, p) }]
+    def actuator(String actuatorName) {
+        // By default auto allocate pin
+        Integer pinNumber = PinAllocator.instance().allocateAnalogPin(actuatorName)
+        ((DSLBinding) this.getBinding()).getModel().createActuator(actuatorName, pinNumber)
+
+        [pin : { p ->
+            // In case the user specifies the pin, we deallocate the pin auto allocated before
+            PinAllocator.instance().deallocateAnalogPin(actuatorName, pinNumber)
+
+            // Then we allocate the pin specified by the user
+            PinAllocator.instance().allocateAnalogPin(actuatorName, Integer.valueOf(p))
+            ((DSLBinding) this.getBinding()).getModel().createActuator(actuatorName, p)
+        }]
     }
 
     def state(String name) {
