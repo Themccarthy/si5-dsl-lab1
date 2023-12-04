@@ -40,7 +40,7 @@ Pin:
     'Pin' name=ID ':' pin=INT ':' type=PinType;
 
 Bus:
-	'bus' number=INT '{'
+	'Bus' number=INT '{'
         pins+=INT
         (',' pins+=INT)*
     '}';

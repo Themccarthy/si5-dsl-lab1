@@ -1,21 +1,22 @@
 app RedButton initial state off {
 	bus
-		Bus 1 {21,22,23,25,26,27,28}
+		Bus 1 {1,2,3,5}
+        Bus 1 {1,2,3,5,12}
 
 	bricks
-		Actuator red_led
-        Screen screen 
+		Actuator red_led 
+        Actuator red_led2 
 		Sensor button 
 	
 	states
 		off {
 			red_led <= LOW
-            screen <= eteint
+            red_led2 <= LOW
 			button is HIGH => on 
 		}
 		on {
-            red_led <= HIGH
-			screen <= allume
+            red_led2 <= HIGH
+			red_led <= HIGH
 			button is LOW => off
 		}
 }

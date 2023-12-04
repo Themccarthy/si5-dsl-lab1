@@ -9,7 +9,7 @@ import { integer } from 'vscode-languageserver';
 export let availableDigitalPins = ['8','9','10','11','12'];
 export let availableAnalogPins = ['A0','A1','A2','A4','A5']
 export let availableBus :string[][] = [['2', '3', '4', '5', '6', '7', '8'],['10','11','12','13','A0','A1','A2'],['10','11','12','13','A4','A5','1']]
-export let bus :string[][] = [['2', '3', '4', '5', '6', '7', '8'],['10','11','12','13','A0','A1','A2'],['10','11','12','13','A4','A5','1']]
+export let allBus :string[][] = [['2', '3', '4', '5', '6', '7', '8'],['10','11','12','13','A0','A1','A2'],['10','11','12','13','A4','A5','1']]
 let usedPins : string[] = []
 
 
@@ -31,6 +31,8 @@ export function generateInoFile(app: App, filePath: string, destination: string 
 
 function compile(app:App, fileNode:CompositeGeneratorNode){
     usedPins=[];
+    [availableBus] = updateAvailableBus(app, availableBus);
+    allBus = [...availableBus];
     [availableAnalogPins, availableDigitalPins] = updateAvailablePins(app, availableAnalogPins, availableDigitalPins);
     reportInfo("Pin disponibles pour les briques digital : "+ availableDigitalPins)
     reportInfo("Pin disponibles pour les briques analog : "+ availableAnalogPins)
@@ -63,7 +65,7 @@ long `+brick.name+`LastDebounceTime = 0;
     
     for(const brick of app.bricks){
         if (isScreen(brick) && brick.bus!=undefined){
-            busPins = bus[brick.bus]
+            busPins = allBus[brick.bus]
             fileNode.append(`
 LiquidCrystal `+brick.name+`(${busPins});
             `,NL);
@@ -115,6 +117,15 @@ LiquidCrystal `+brick.name+`(${busPins});
         return [analogs, digitals];
     }
 
+    function updateAvailableBus(app: App,  bus: string[][]) {
+        if (app.bus.length === 0) return [bus];
+        bus = [];
+        app.bus.forEach(item => {
+            bus.push(item.pins.map(pin => pin.toString()))
+        });
+        return [bus];
+    }
+
     function allocatePins(app: App, pinSize: integer, busSize : integer) {
         app.bricks.forEach(brick => {
             if(isActuator(brick) || isSensor(brick)){
@@ -132,7 +143,7 @@ LiquidCrystal `+brick.name+`(${busPins});
                     brick.bus = Number(brick.bus) -1 
                     if(availableBus[brick.bus].length > 0){
                         useBus(brick.bus);
-                        reportInfo("La brique "+brick.name+' a bien été lié au bus '+Number(brick.bus+1)+ " qui posséde les pins :"+bus[brick.bus]+ " comme demandé par l'utilisateur")
+                        reportInfo("La brique "+brick.name+' a bien été lié au bus '+Number(brick.bus+1)+ " qui posséde les pins :"+allBus[brick.bus]+ " comme demandé par l'utilisateur")
                     }else{
                         reportWarning("Le pin "+ brick.bus+' n a pas pu etre assigné a la brique '+brick.name+' un pin lui a alors été assigné par defaut a un pin disponible')
                         brick.bus = undefined;
@@ -175,7 +186,7 @@ LiquidCrystal `+brick.name+`(${busPins});
                         if(busNumber != undefined){
                             brick.bus = Number(busNumber);
                             useBus(busNumber)
-                            reportInfo("La brique "+brick.name+' a été lié dynamiquement au bus '+Number(busNumber+1)+ " qui posséde les pins :"+bus[brick.bus])
+                            reportInfo("La brique "+brick.name+' a été lié dynamiquement au bus '+Number(busNumber+1)+ " qui posséde les pins :"+allBus[brick.bus])
                         }
                     }else{
                         reportError('Il n y a plus de pin disponible pour utiliser un bus')
