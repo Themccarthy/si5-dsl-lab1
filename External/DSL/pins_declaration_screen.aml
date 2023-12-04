@@ -1,0 +1,22 @@
+app RedButton initial state off {
+	bus
+		Bus 1 {21,22,23,25,26,27,28}
+
+	bricks
+		Actuator red_led
+        Screen screen 
+		Sensor button 
+	
+	states
+		off {
+			red_led <= LOW
+            screen <= eteint
+			button is HIGH => on 
+		}
+		on {
+            red_led <= HIGH
+			screen <= allume
+			button is LOW => off
+		}
+}
+

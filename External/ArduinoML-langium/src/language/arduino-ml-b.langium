@@ -1,8 +1,16 @@
 grammar ArduinoMlB
 
 entry App:
-    'app' name=ID 'initial' 'state' initial=[State:ID]
+	'app' name=ID 'initial' 'state' initial=[State:ID]
 	'{'
+	('pins'
+	pins+=Pin
+	(pins+=Pin)*)?
+
+	('bus'
+	bus+=Bus
+	(bus+=Bus)*)?
+
 		'bricks'
 		bricks+=Brick
 		(bricks+=Brick)* 
@@ -13,34 +21,67 @@ entry App:
 	'}';
 
 Brick:
-    (Actuator | Sensor);
+	(Actuator | Sensor | Screen);
 
 Actuator:
-    {infer Actuator}
+	{infer Actuator}
 	'Actuator' name=ID (':' pin=INT)?;
 
 Sensor:
-    {infer Sensor}
+	{infer Sensor}
 	'Sensor'  name=ID (':' pin=INT)?;
 
+Screen:
+	{infer Screen}
+	'Screen'  name=ID (':' bus=INT)?  ('size:' size=INT)?;
+
+Pin:
+	{infer Pin}
+    'Pin' name=ID ':' pin=INT ':' type=PinType;
+
+Bus:
+	'Bus' number=INT '{'
+        pins+=INT
+        (',' pins+=INT)*
+    '}';
+
 State:
-    name=ID '{'
-		actions+=Action
-		(actions+=Action)* 
-		transition=Transition
-	'}';
+	name=ID '{'
+        actions+=(ActuatorAction | ScreenAction)
+        (actions+=(ActuatorAction | ScreenAction))* 
+        transition=Transition
+    '}';
 
+ActuatorAction:
+	actuator=[Actuator:ID] '<=' value=Signal;
 
-Action:
-    actuator=[Actuator:ID] '<=' value=Signal;
+ScreenAction:
+	screen=[Screen:ID] '<=' value=ID;
 
 Transition:
-    sensor=[Sensor:ID] 'is' value=Signal '=>' next=[State:ID];
+	transitionFirst=TransitionFirst   ( transitionCondition+=TransitionCondition)* '=>' next=[State:ID];
+
+TransitionFirst:
+	sensor=[Sensor:ID] 'is' value=Signal;
+
+TransitionCondition:
+	logicalOperator=LogicalOperator sensor=[Sensor:ID] 'is' value=Signal;
+
+LogicalOperator:
+	value=('&&' | '||');
 
 Signal:
-    value=(HIGH | LOW);
+	value=(HIGH | LOW);
 terminal HIGH: 'HIGH';
 terminal LOW: 'LOW';
+
+PinType:
+	value=(DIGITAL_INPUT | DIGITAL_OUTPUT | ANALOG_INPUT | ANALOG_OUTPUT);
+terminal DIGITAL_INPUT: 'DIGITAL_INPUT';
+terminal DIGITAL_OUTPUT: 'DIGITAL_OUTPUT';
+terminal ANALOG_INPUT: 'ANALOG_INPUT';
+terminal ANALOG_OUTPUT: 'ANALOG_OUTPUT';
+
 
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;

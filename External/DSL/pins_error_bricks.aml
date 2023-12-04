@@ -1,0 +1,27 @@
+app RedButtonInValid initial state off {
+	bricks
+		Actuator red_led : 8
+		Actuator red_led2 : 9
+		Actuator red_led3 : 10
+		Actuator red_led4 : 11
+		Actuator red_led5 : 12
+		Actuator red_led6
+		Actuator red_led7 
+		Actuator red_led8 
+		Sensor button 	
+		Screen screen1
+		Screen screen3
+		Screen screen2
+		Screen screen4
+	
+	states
+		off {
+			red_led <= LOW
+			button is HIGH => on
+		}
+		on {
+			red_led <= HIGH
+			button is HIGH => off
+		}
+}
+

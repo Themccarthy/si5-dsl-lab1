@@ -1,0 +1,20 @@
+app RedButton initial state off {
+	bricks
+		Actuator red_led : 12
+		Sensor button : 9 
+        Screen screen : 1 size: 26
+	
+	states
+		off {
+			red_led <= LOW
+            screen <= anticonstitutionnellement 
+			button is HIGH => on 
+		}
+		on {
+			red_led <= HIGH
+			screen <= allume
+			button is HIGH => off
+		}
+}
+
+
