@@ -58,4 +58,5 @@ build/
 *.ino
 
 *.log
+*logs
 
