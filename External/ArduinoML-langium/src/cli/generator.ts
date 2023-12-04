@@ -6,11 +6,12 @@ import { extractDestinationAndName } from './cli-util.js';
 import { App, State, Transition, Actuator, Sensor, isSensor, isActuator, isScreenAction, isActuatorAction, ActuatorAction, ScreenAction, isScreen, Screen} from '../language/generated/ast.js';
 import { integer } from 'vscode-languageserver';
 
-let availablePins = [8,9,10,11,12];
-let availableBus = [1,2,3]
-let bus1Pin =['2', '3', '4', '5', '6', '7', '8']
-let bus2Pin =['10','11','12','13','A0','A1','A2']
-let bus3Pin =['10','11','12','13','A4','A5','1']
+export let availableDigitalPins = [8,9,10,11,12];
+export let availableAnalogPins = [21,22]
+export let availableBus = [1,2,3]
+export let bus1Pin =['2', '3', '4', '5', '6', '7', '8']
+export let bus2Pin =['10','11','12','13','A0','A1','A2']
+export let bus3Pin =['10','11','12','13','A4','A5','1']
 
 
 
@@ -30,9 +31,11 @@ export function generateInoFile(app: App, filePath: string, destination: string 
 }
 
 function compile(app:App, fileNode:CompositeGeneratorNode){
-    reportInfo("Pin disponibles pour les briques numériques:"+ availablePins)
-    reportInfo("Bus disponibles pour les ecran:"+ availableBus)
-    allocatePins(app,availablePins.length, availableBus.length);
+    [availableAnalogPins, availableDigitalPins] = updateAvailablePins(app, availableAnalogPins, availableDigitalPins);
+    reportInfo("Pin disponibles pour les briques digital : "+ availableDigitalPins)
+    reportInfo("Pin disponibles pour les briques analog : "+ availableAnalogPins)
+    reportInfo("Bus disponibles pour les ecran : "+ availableBus)
+    allocatePins(app,availableDigitalPins.length, availableBus.length);
     let containScreen = app.bricks.find(brick => isScreen(brick))
     let screenImport = "#include <LiquidCrystal.h>"
     fileNode.append(
@@ -101,11 +104,28 @@ LiquidCrystal `+brick.name+`(${busPins});
 
     }
 
+
+     function updateAvailablePins(app: App, analogs: integer[], digitals : integer[]) {
+        if (app.pins.length === 0) return [analogs, digitals];
+
+        analogs = [];
+        digitals = [];
+
+        app.pins.forEach(pin => {
+            if (pin.type?.value === 'ANALOG_INPUT' || pin.type?.value === 'ANALOG_OUTPUT') {
+                analogs.push(pin.pin!);
+            } else if (pin.type?.value === 'DIGITAL_INPUT' || pin.type?.value === 'DIGITAL_OUTPUT') {
+                digitals.push(pin.pin!);
+            }
+        });
+        return [analogs, digitals];
+    }
+
     function allocatePins(app: App, pinSize: integer, busSize : integer) {
         app.bricks.forEach(brick => {
             if(isActuator(brick) || isSensor(brick)){
                 if (brick.pin !== undefined) {
-                    if(availablePins.includes(brick.pin)){
+                    if(availableDigitalPins.includes(brick.pin)){
                         usePin(brick.pin);
                         reportInfo("La brique "+brick.name+' a bien été lié au pin '+brick.pin+ " comme demandé par l'utilisateur")
                     }else{
@@ -128,19 +148,19 @@ LiquidCrystal `+brick.name+`(${busPins});
         app.bricks.forEach(brick => {
             if(isActuator(brick) || isSensor(brick)){
                 if (brick.pin === undefined) {
-                    if (availablePins.length === 0) {
-                        reportError('Pas assez de pin disponible pour toutes les brique numérique crées, vous disposez de '+app.bricks.filter(brick=> isActuator(brick) || isSensor(brick)).length+' briques numérique dans votre systeme or vous n avez que '+pinSize+' pin disponible pour les brique numérique')
+                    if (availableDigitalPins.length === 0) {
+                        reportError('Pas assez de pin disponible pour toutes les briques digitales crées, vous disposez de '+app.bricks.filter(brick=> isActuator(brick) || isSensor(brick)).length+' briques digitales dans votre systeme or vous n avez que '+pinSize+' pin disponible pour les briques digitales')
                         throw new Error("Erreur : Plus de pins disponibles pour les brique numérique.");
                     }
                     // Attribuer un pin disponible pour le sensor
-                    let pinNumber = availablePins.shift();
+                    let pinNumber = availableDigitalPins.shift();
                     brick.pin = pinNumber;
-                    reportInfo("La brique "+brick.name+' a été lié dynamiquement au pin '+pinNumber)
+                    reportInfo("La brique "+brick.name+' a été lié dynamiquement au pin digital '+pinNumber)
                 }
             }else if(isScreen(brick)){
                 if (brick.bus === undefined) {
                     if (availableBus.length === 0) {
-                        reportError('Pas assez de pin disponible pour toutes les ecran crées, vous disposez de '+app.bricks.filter(brick=> isScreen(brick)).length+' ecran dans votre systeme or vous n avez que '+busSize+' bus disponible pour les ecran')
+                        reportError('Pas assez de pin disponible pour toutes les ecrans crées, vous disposez de '+app.bricks.filter(brick=> isScreen(brick)).length+' ecran dans votre systeme or vous n avez que '+busSize+' bus disponible pour les ecran')
                         throw new Error("Erreur : Plus de pins disponibles pour les ecran.");
                     }
                     // Attribuer un pin disponible pour le sensor
@@ -153,9 +173,9 @@ LiquidCrystal `+brick.name+`(${busPins});
     }
 
     function usePin(pinValue: integer) {
-        let index = availablePins.indexOf(pinValue);
+        let index = availableDigitalPins.indexOf(pinValue);
         if (index !== -1) {
-            availablePins.splice(index, 1);
+            availableDigitalPins.splice(index, 1);
         }
     }
 
