@@ -1,24 +1,24 @@
-app RedButton initial state rien {
+app RedButton initial state none {
 	bricks
 		Actuator red_led : 12
         Actuator red_led2 : 11
 		Sensor button : 9
 	
 	states
-		button {
+		led1 {
 			red_led <= LOW
 			red_led2 <= HIGH
-			button is HIGH => alarme 
+			button is HIGH => led2 
 		}
-		alarme {
+		led2 {
 			red_led <= HIGH
 			red_led2 <= LOW
-			button is HIGH => rien
+			button is HIGH => none
 		}
-        rien {
+        none {
 			red_led <= LOW
 			red_led2 <= LOW
-			button is HIGH => button
+			button is HIGH => led1
 		}
 }
 

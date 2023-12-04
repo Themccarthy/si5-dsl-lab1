@@ -8,9 +8,9 @@ import { integer } from 'vscode-languageserver';
 
 let availablePins = [8,9,10,11,12];
 let availableBus = [1,2,3]
-let bus1Pin =[2, 3, 4, 5, 6, 7, 8]
-let bus2Pin =[2, 3, 4, 5, 6, 7, 8]
-let bus3Pin =[2, 3, 4, 5, 6, 7, 8]
+let bus1Pin =['2', '3', '4', '5', '6', '7', '8']
+let bus2Pin =['10','11','12','13','A0','A1','A2']
+let bus3Pin =['10','11','12','13','A4','A5','1']
 
 
 
@@ -223,7 +223,7 @@ LiquidCrystal `+brick.name+`(${busPins});
 	function compileAction(action: ActuatorAction | ScreenAction,transition: Transition, fileNode:CompositeGeneratorNode) {
         if(isScreenAction(action) && action.screen.ref){
             fileNode.append(`
-                    if (!${transition.sensorCondition1.sensor.ref?.name}BounceGuard) {
+                    if (!${transition.transitionFirst.sensor.ref?.name}BounceGuard) {
                         ${action.screen.ref.name}.clear();
                         ${action.screen.ref.name}.print("${action.value}"); 
                     }
@@ -237,17 +237,17 @@ LiquidCrystal `+brick.name+`(${busPins});
 
     function compileTransition(transition: Transition, fileNode:CompositeGeneratorNode) {
         fileNode.append(`
-		 			`+transition.sensorCondition1.sensor.ref?.name+`BounceGuard = millis() - `+transition.sensorCondition1.sensor.ref?.name+`LastDebounceTime > debounce;`);
+		 			`+transition.transitionFirst.sensor.ref?.name+`BounceGuard = millis() - `+transition.transitionFirst.sensor.ref?.name+`LastDebounceTime > debounce;`);
         let ifCase : string='';
-        ifCase += `digitalRead(${transition.sensorCondition1.sensor.ref?.pin}) == ${transition.sensorCondition1.value.value}`;
-        transition.sensorConditions.forEach((condition) => {
+        ifCase += `digitalRead(${transition.transitionFirst.sensor.ref?.pin}) == ${transition.transitionFirst.value.value}`;
+        transition.transitionCondition.forEach((condition) => {
             ifCase += ` ${condition.logicalOperator.value} `;
             ifCase += `digitalRead(${condition.sensor.ref?.pin}) == ${condition.value.value} `;
         
         });
         fileNode.append(`
-                    if( ${ifCase} && `+transition.sensorCondition1.sensor.ref?.name+`BounceGuard) {
-                        `+transition.sensorCondition1.sensor.ref?.name+`LastDebounceTime = millis();
+                    if( ${ifCase} && `+transition.transitionFirst.sensor.ref?.name+`BounceGuard) {
+                        `+transition.transitionFirst.sensor.ref?.name+`LastDebounceTime = millis();
                         currentState = `+transition.next.ref?.name+`;
                     }
         `)

@@ -8,7 +8,7 @@ app RedButtonInValid initial state off {
 		Actuator red_led6 
 		Actuator red_led7 
 		Actuator red_led8 
-		Sensor button : 8
+		Sensor button 
 	
 	states
 		off {

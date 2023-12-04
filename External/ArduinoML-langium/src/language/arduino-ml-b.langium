@@ -25,7 +25,7 @@ Sensor:
 
 Screen:
 	{infer Screen}
-	'Screen'  name=ID (':' bus=INT)?;
+	'Screen'  name=ID (':' bus=INT)?  ('size:' size=INT)?;
 
 
 State:
@@ -42,12 +42,12 @@ ScreenAction:
 	screen=[Screen:ID] '<=' value=ID;
 
 Transition:
-	sensorCondition1=SensorCondition1 ( sensorConditions+=SensorCondition)* '=>' next=[State:ID];
+	transitionFirst=TransitionFirst   ( transitionCondition+=TransitionCondition)* '=>' next=[State:ID];
 
-SensorCondition1:
+TransitionFirst:
 	sensor=[Sensor:ID] 'is' value=Signal;
 
-SensorCondition:
+TransitionCondition:
 	logicalOperator=LogicalOperator sensor=[Sensor:ID] 'is' value=Signal;
 
 LogicalOperator:
