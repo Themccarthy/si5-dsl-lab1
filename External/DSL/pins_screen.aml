@@ -2,7 +2,7 @@ app RedButton initial state off {
 	bricks
 		Actuator red_led
 		Sensor button 
-        Screen screen
+		Screen screen
 	
 	states
 		off {

@@ -7,6 +7,10 @@ entry App:
 	pins+=Pin
 	(pins+=Pin)*)?
 
+	('bus'
+	bus+=Bus
+	(bus+=Bus)*)?
+
 		'bricks'
 		bricks+=Brick
 		(bricks+=Brick)* 
@@ -34,6 +38,12 @@ Screen:
 Pin:
 	{infer Pin}
     'Pin' name=ID ':' pin=INT ':' type=PinType;
+
+Bus:
+	'bus' number=INT '{'
+        pins+=INT
+        (',' pins+=INT)*
+    '}';
 
 State:
 	name=ID '{'

@@ -1,15 +1,15 @@
 app RedButton initial state off {
 	pins
 		Pin digital_1 : 26 : DIGITAL_OUTPUT
-		Pin digital_2 : 11 : DIGITAL_OUTPUT
-		Pin digital_3 : 9 : DIGITAL_INPUT
+		Pin digital_2 : 21 : DIGITAL_OUTPUT
+		Pin digital_3 : 22 : DIGITAL_INPUT
 		Pin analog_1 : 3 : ANALOG_INPUT
 		Pin analog_2 : 4 : ANALOG_OUTPUT
 
 	bricks
 		Actuator red_led : 26
-        Actuator red_led2 : 11
-		Sensor button : 9
+        Actuator red_led2 
+		Sensor button 
 	
 	states
 		off {
