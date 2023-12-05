@@ -73,6 +73,13 @@ export class ArduinoMlBValidator {
             accept('error', 'Pas assez de pin disponible pour toutes les briques digitales crées, vous disposez de '+app.bricks.filter(brick=> isActuator(brick) || isSensor(brick)).length+' briques digitales dans votre systeme or vous n avez que '+numberPins+' pins disponibles pour les briques digitales', { node: app, property: 'bricks' });
         }
 
+        let pinsNumberUsed :integer[] =[] ;
+        for( const brick of app.bricks){
+            if((isActuator(brick) || isSensor(brick))  && brick.pin!==undefined){
+                pinsNumberUsed.push(brick.pin)
+            }
+        }      
+
         let numberBus;
         if(app.bus!== undefined && app.bus.length>0){
             numberBus = app.bus.length;
@@ -91,14 +98,28 @@ export class ArduinoMlBValidator {
         }
 
 
+
         app.bricks.forEach( screen => {
             if ( isScreen(screen) &&  screen.bus!=undefined && !bus.includes(screen.bus) ) {
-                accept('error', 'Le bus n existe pas', { node: screen, property: 'bus' });
+                accept('error', 'Le bus '+screen.bus +' n existe pas', { node: screen, property: 'bus' });
             }
         })
 
         const compteur: { [key: number]: number } = {};
         for (const screen of app.bricks) {
+            if(isScreen(screen) && screen.bus!==undefined){
+                let pinsUsedNumberBus : number[] =[]
+                if(app.bus!==undefined && app.bus.length > 0 && bus.includes(screen.bus)){
+                    let pinsUsedNumberBusDoubleTab = app.bus.filter(b => b.number!==undefined && b.number == screen.bus).map(b => b.pins)
+                    pinsUsedNumberBus = pinsUsedNumberBusDoubleTab.reduce((acc, currentArray) => acc.concat(currentArray), []);
+                }else if(bus.includes(screen.bus)){
+                    pinsUsedNumberBus = availableBus[screen.bus-1].map(pin => Number(pin))
+                }
+                const pinsCommun = pinsUsedNumberBus.find(element => pinsNumberUsed.includes(element));
+                if(pinsCommun!==undefined){
+                    accept('error', 'Le pin '+pinsCommun+' est utliser dans le bus '+screen.bus+' est utilisé dans une autre brique', { node: screen, property: 'bus' });
+                }
+            }
             if ( isScreen(screen) && screen.bus!==undefined && compteur[screen.bus]) {
                 compteur[screen.bus]++;
                 if (compteur[screen.bus] > 1) {
@@ -108,6 +129,7 @@ export class ArduinoMlBValidator {
                 compteur[screen.bus] = 1;
             }
         }
+
 
 
         this.pins.clear();
@@ -142,6 +164,7 @@ export class ArduinoMlBValidator {
 
 
     checkBricks(brick: Brick, accept: ValidationAcceptor): void {
+        let error = false;
         let app;
         let current = brick.$container;
         if (isApp(current)) {
@@ -162,24 +185,32 @@ export class ArduinoMlBValidator {
                 // Check if brick bus is correct
                 if(brick.pin !== undefined){
                     let pinNumbers = Array.from(this.pins.keys()).map(item => item.pin);
-                    if (pinNumbers.length !== 0 && !pinNumbers.includes(brick.pin.toString())) accept('error', 'Le pin n existe pas', { node: brick, property: 'pin' });
+                    if (pinNumbers.length !== 0 && !pinNumbers.includes(brick.pin.toString())) {
+                        error =true;
+                        accept('error', 'Le pin '+brick.pin +' n existe pas', { node: brick, property: 'pin' });
+                    }
                 }
                 
                 // Check if brick pin is unique
-                if (!hasCurrentBrick && allPinsDefined.some(item => brick.pin && item[0].pin === brick.pin.toString())) 
+                if (brick.pin !== undefined && !hasCurrentBrick && allPinsDefined.some(item => brick.pin && item[0].pin === brick.pin.toString())){
+                    error =true;
                     accept('error', 'Le pin est deja utlisé par une autre brique', { node: brick, property: 'pin' });
-    
-                // Check if brick pin type is correct
-                let currentPin = Array.from(this.pins.keys()).find(item =>  brick.pin && item.pin === brick.pin.toString());
-                if (currentPin !== undefined && 
-                    ((isSensor(brick)  && 
-                    (currentPin.type !== 'DIGITAL_INPUT' && currentPin.type !== 'DIGITAL_OUTPUT'))||
-                    ( isActuator(brick) && 
-                    (currentPin.type !== 'DIGITAL_INPUT' && currentPin.type !== 'DIGITAL_OUTPUT')))) {
-                    accept('error', 'Le brique est assigné au mauvais type de pin (type invalide)', { node: brick, property: 'pin' });
                 }
-                // If all checks passed, add brick to the pin map
-                this.pins.set(currentPin!, brick);
+                // Check if brick pin type is correct
+                if(brick.pin !== undefined){
+                    let currentPin = Array.from(this.pins.keys()).find(item =>  brick.pin && item.pin === brick.pin.toString());
+                    if (currentPin !== undefined && 
+                        ((isSensor(brick)  && 
+                        (currentPin.type !== 'DIGITAL_INPUT' && currentPin.type !== 'DIGITAL_OUTPUT'))||
+                        ( isActuator(brick) && 
+                        (currentPin.type !== 'DIGITAL_INPUT' && currentPin.type !== 'DIGITAL_OUTPUT')))) {
+                        error =true;
+                        accept('error', 'Le brique est assigné au mauvais type de pin (type invalide)', { node: brick, property: 'pin' });
+                    }
+                if(error == false){
+                    this.pins.set(currentPin!, brick);
+                }
+                }
             }
         }
         

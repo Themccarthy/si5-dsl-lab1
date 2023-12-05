@@ -55,8 +55,5 @@ build/
 */static/worker/
 */syntaxes/
 
-*.ino
-
-*.log
 *logs
 
