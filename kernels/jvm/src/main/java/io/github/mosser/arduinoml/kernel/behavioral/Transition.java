@@ -12,6 +12,7 @@ import java.util.List;
 public class Transition implements Visitable {
 
 	private State next;
+	private TransitionFirst transitionFirst;
 	private List<TransitionCondition> transitionConditions = new ArrayList<>();
 
 
@@ -38,6 +39,14 @@ public class Transition implements Visitable {
 
 	public void addAllTransitionConditions(List<TransitionCondition> transitionConditions) {
 		this.transitionConditions.addAll(transitionConditions);
+	}
+
+	public TransitionFirst getTransitionFirst() {
+		return transitionFirst;
+	}
+
+	public void setTransitionFirst(TransitionFirst transitionFirst) {
+		this.transitionFirst = transitionFirst;
 	}
 
 	@Override

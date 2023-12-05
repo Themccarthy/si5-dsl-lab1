@@ -1,6 +1,5 @@
 package TeamB.dsl
 
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.LogicalCondition
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL;

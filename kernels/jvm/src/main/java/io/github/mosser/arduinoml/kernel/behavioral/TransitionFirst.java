@@ -3,10 +3,9 @@ package jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor;
 
-public class TransitionCondition{
+public class TransitionFirst {
     private Sensor sensor;
     private SIGNAL value;
-    private LogicalOperator logicalOperator = LogicalOperator.NONE;
 
     public Sensor getSensor() {
         return sensor;
@@ -22,13 +21,5 @@ public class TransitionCondition{
 
     public void setValue(SIGNAL value) {
         this.value = value;
-    }
-
-    public void setLogicalCondition(LogicalOperator logicalOperator) {
-        this.logicalOperator = logicalOperator;
-    }
-
-    public LogicalOperator getLogicalCondition() {
-        return logicalOperator;
     }
 }

@@ -2,10 +2,7 @@ package TeamB.dsl;
 
 
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.*;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.*;
 
@@ -62,6 +59,13 @@ public class Model {
         bindVariable(name, screen);
     }
 
+    public void setScreenSize(String name, Integer screenLineLength) {
+        if (brickMap.containsKey(name)) {
+            Screen screen = (Screen) brickMap.get(name);
+            screen.setLineLength(screenLineLength);
+        }
+    }
+
     public Screen getScreen(String name) {
         return (Screen) brickMap.getOrDefault(name, null);
     }
@@ -79,9 +83,10 @@ public class Model {
         return stateMap.getOrDefault(name, null);
     }
 
-    public void createTransition(State baseState, State destinationState, List<TransitionCondition> transitionConditions) {
+    public void createTransition(State baseState, State destinationState, TransitionFirst transitionFirst, List<TransitionCondition> transitionConditions) {
         Transition transition = new Transition();
         transition.setNext(destinationState);
+        transition.setTransitionFirst(transitionFirst);
         transition.addAllTransitionConditions(transitionConditions);
         baseState.setTransition(transition);
     }

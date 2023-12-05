@@ -56,7 +56,7 @@ public class BusPinManager {
     public void busPinManagerError(Integer busNumber, List<Integer> busPins) throws Exception {
         String errorTitle = "Cannot add/update bus number " + busNumber + " with pins " + busPins.toString();
         String errorDesc = "The bus must contain at least 7 pins";
-        String content = "\n" + errorTitle + "\n" + errorDesc;
+        String content = errorTitle + ",  " + errorDesc + "\n";
 
         logToFile(content);
 
@@ -64,6 +64,6 @@ public class BusPinManager {
     }
 
     public void logToFile(String content) {
-        LogWritter.instance().logToFile(content);
+        LogWritter.instance().logToFile(LogWritter.LOG_TYPE.INFO, content);
     }
 }

@@ -3,10 +3,11 @@ package TeamB.dsl
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ActuatorAction
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.LogicalCondition
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.LogicalOperator
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ScreenAction
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionFirst
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Screen
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor
@@ -23,30 +24,30 @@ abstract class Basescript extends Script {
 
     def sensor(String sensorName) {
         // By default auto allocate pin
-        Integer pinNumber = PinAllocator.instance().allocateDigitalPin(sensorName)
+        Integer pinNumber = PinAllocator.instance().allocatePin(sensorName)
         ((DSLBinding) this.getBinding()).getModel().createSensor(sensorName, pinNumber)
 
         [pin : { p ->
             // In case the user specifies the pin, we deallocate the pin auto allocated before
-            PinAllocator.instance().deallocateDigitalPin(sensorName, pinNumber)
+            PinAllocator.instance().deallocatePin(sensorName, pinNumber)
 
             // Then we allocate the pin specified by the user
-            PinAllocator.instance().allocateDigitalPin(sensorName, Integer.valueOf(p))
+            PinAllocator.instance().allocatePin(sensorName, Integer.valueOf(p))
             ((DSLBinding) this.getBinding()).getModel().createSensor(sensorName, p)
         }]
     }
 
     def actuator(String actuatorName) {
         // By default auto allocate pin
-        Integer pinNumber = PinAllocator.instance().allocateAnalogPin(actuatorName)
+        Integer pinNumber = PinAllocator.instance().allocatePin(actuatorName)
         ((DSLBinding) this.getBinding()).getModel().createActuator(actuatorName, pinNumber)
 
         [pin : { p ->
             // In case the user specifies the pin, we deallocate the pin auto allocated before
-            PinAllocator.instance().deallocateAnalogPin(actuatorName, pinNumber)
+            PinAllocator.instance().deallocatePin(actuatorName, pinNumber)
 
             // Then we allocate the pin specified by the user
-            PinAllocator.instance().allocateAnalogPin(actuatorName, Integer.valueOf(p))
+            PinAllocator.instance().allocatePin(actuatorName, Integer.valueOf(p))
             ((DSLBinding) this.getBinding()).getModel().createActuator(actuatorName, p)
         }]
     }
@@ -56,14 +57,24 @@ abstract class Basescript extends Script {
         Integer pinNumber = PinAllocator.instance().allocateBusPin(screenName)
         ((DSLBinding) this.getBinding()).getModel().createScreen(screenName, pinNumber)
 
-        [bus : { b ->
-            // In case the user specifies the pin, we deallocate the pin auto allocated before
-            PinAllocator.instance().deallocateBusPin(screenName, pinNumber)
+        def screenClosure
+        screenClosure =
+            [bus : { b ->
+                // In case the user specifies the pin, we deallocate the pin auto allocated before
+                PinAllocator.instance().deallocateBusPin(screenName, pinNumber)
 
-            // Then we allocate the pin specified by the user
-            PinAllocator.instance().allocateBusPin(screenName, Integer.valueOf(b))
-            ((DSLBinding) this.getBinding()).getModel().createScreen(screenName, b)
-        }]
+                // Then we allocate the pin specified by the user
+                PinAllocator.instance().allocateBusPin(screenName, Integer.valueOf(b))
+                ((DSLBinding) this.getBinding()).getModel().createScreen(screenName, b)
+
+                return screenClosure
+            },
+             size: { s ->
+                 ((DSLBinding) this.getBinding()).getModel().setScreenSize(screenName, s)
+                 return screenClosure
+             }]
+
+        return screenClosure
     }
 
     def state(String name) {
@@ -97,25 +108,30 @@ abstract class Basescript extends Script {
         String destinationStateValue = "";
         State state1 = null;
         State state2 = null;
+        boolean isFirst = true;
+        TransitionFirst transitionFirst = new TransitionFirst()
         List<TransitionCondition> transitionConditions = new ArrayList<>();
 
         def conditionClosure
 
         def handleAnd = { nextSensorName ->
+            isFirst = false;
             TransitionCondition transitionCondition = new TransitionCondition()
-            transitionCondition.setLogicalCondition(LogicalCondition.AND)
+            transitionCondition.setLogicalCondition(LogicalOperator.AND)
             transitionConditions.add(transitionCondition)
             conditionClosure(nextSensorName) // Return to conditionClosure for chaining
         }
 
         def handleOr = { nextSensorName ->
+            isFirst = false;
             TransitionCondition transitionCondition = new TransitionCondition()
-            transitionCondition.setLogicalCondition(LogicalCondition.OR)
+            transitionCondition.setLogicalCondition(LogicalOperator.OR)
             transitionConditions.add(transitionCondition)
             conditionClosure(nextSensorName) // Return to conditionClosure for chaining
         }
 
         def handleFirst = { destinationState, nextSensorName ->
+            isFirst = true;
             destinationStateValue = destinationState
             state1 = ((DSLBinding) this.getBinding()).getModel().getState(baseState)
             state2 = ((DSLBinding) this.getBinding()).getModel().getState(destinationStateValue)
@@ -132,14 +148,21 @@ abstract class Basescript extends Script {
                 [turn: { signal ->
                     Sensor sensor = ((DSLBinding) this.getBinding()).getModel().getSensor(sensorName)
 
-                    TransitionCondition transitionCondition = new TransitionCondition()
-                    transitionCondition.setSensor(sensor)
-                    transitionCondition.setValue(signal)
-                    LogicalCondition logicalCondition = LogicalCondition.NONE
-                    transitionCondition.setLogicalCondition(logicalCondition)
-                    transitionConditions.add(transitionCondition)
+                    if (isFirst) {
+                        transitionFirst = new TransitionFirst()
+                        transitionFirst.setSensor(sensor)
+                        transitionFirst.setValue(signal)
+                    }
+                    else {
+                        TransitionCondition transitionCondition = new TransitionCondition()
+                        transitionCondition.setSensor(sensor)
+                        transitionCondition.setValue(signal)
+                        LogicalOperator logicalOperator = LogicalOperator.NONE
+                        transitionCondition.setLogicalCondition(logicalOperator)
+                        transitionConditions.add(transitionCondition)
+                    }
 
-                    ((DSLBinding) this.getBinding()).getModel().createTransition(state1, state2, transitionConditions)
+                    ((DSLBinding) this.getBinding()).getModel().createTransition(state1, state2, transitionFirst, transitionConditions)
 
 
                      [and: {

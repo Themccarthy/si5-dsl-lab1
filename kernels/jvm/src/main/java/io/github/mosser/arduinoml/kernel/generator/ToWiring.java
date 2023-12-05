@@ -16,6 +16,8 @@ import java.util.List;
 public class ToWiring extends Visitor<StringBuffer> {
 	enum PASS {ONE, TWO}
 
+	private String bounceGardName = "";
+
 
 	public ToWiring() {
 		this.result = new StringBuffer();
@@ -87,6 +89,7 @@ public class ToWiring extends Visitor<StringBuffer> {
 	@Override
 	public void visit(Sensor sensor) {
 		if(context.get("pass") == PASS.ONE) {
+			bounceGardName = sensor.getName();
 			w(String.format("\nboolean %sBounceGuard = false;\n", sensor.getName()));
 			w(String.format("long %sLastDebounceTime = 0;\n", sensor.getName()));
 			return;
@@ -136,35 +139,29 @@ public class ToWiring extends Visitor<StringBuffer> {
 			return;
 		}
 		if(context.get("pass") == PASS.TWO) {
+			TransitionFirst transitionFirst = transition.getTransitionFirst();
 			List<TransitionCondition> transitionConditions = transition.getTransitionConditions();
 
-			for (TransitionCondition transitionCondition : transitionConditions) {
-				if (transitionCondition.getLogicalCondition().equals(LogicalCondition.NONE)) {
-					String sensorName = transitionCondition.getSensor().getName();
-					w(String.format("\t\t\t%sBounceGuard = millis() - %sLastDebounceTime > debounce;\n",
-							sensorName, sensorName));
-				}
-			}
+			String transitionFirstSensorName = transitionFirst.getSensor().getName();
+			w(String.format("\t\t\t%sBounceGuard = millis() - %sLastDebounceTime > debounce;\n", bounceGardName, bounceGardName));
 
-			w("\t\t\tif(");
+			w(String.format("\t\t\tif(digitalRead(%d) == %s ", transitionFirst.getSensor().getPin(), transitionFirst.getValue()));
 
 			for (TransitionCondition transitionCondition : transitionConditions) {
-				if (transitionCondition.getLogicalCondition().equals(LogicalCondition.NONE)) {
-					w(String.format("digitalRead(%d) == %s && %sBounceGuard ",
-							transitionCondition.getSensor().getPin(), transitionCondition.getValue(), transitionCondition.getSensor().getName()));
+				if (transitionCondition.getLogicalCondition().equals(LogicalOperator.NONE)) {
+					w(String.format("digitalRead(%d) == %s ",
+							transitionCondition.getSensor().getPin(), transitionCondition.getValue()));
 				}
 				else {
 					w(String.format("%s ", transitionCondition.getLogicalCondition().getOperator()));
 				}
 			}
 
+			w(String.format("&& %sBounceGuard", bounceGardName));
+
 			w(") {\n");
 
-			for (TransitionCondition transitionCondition : transitionConditions) {
-				if (transitionCondition.getLogicalCondition().equals(LogicalCondition.NONE)) {
-					w(String.format("\t\t\t\t%sLastDebounceTime = millis();\n", transitionCondition.getSensor().getName()));
-				}
-			}
+			w(String.format("\t\t\t\t%sLastDebounceTime = millis();\n", bounceGardName));
 
 			w("\t\t\t\tcurrentState = " + transition.getNext().getName() + ";\n");
 			w("\t\t\t}\n");
@@ -183,8 +180,10 @@ public class ToWiring extends Visitor<StringBuffer> {
 				w(String.format("\t\t\tdigitalWrite(%d,%s);\n",a.getActuator().getPin(),a.getValue()));
 			}
 			else if (action instanceof ScreenAction s){
-				w(String.format("\t\t\t%s.clear();\n",s.getScreen().getName()));
-				w(String.format("\t\t\t%s.print(\"%s\");\n",s.getScreen().getName(),s.getContent()));
+				w(String.format("\t\t\tif(!%sBounceGuard) {\n", bounceGardName));
+				w(String.format("\t\t\t\t%s.clear();\n",s.getScreen().getName()));
+				w(String.format("\t\t\t\t%s.print(\"%s\");\n",s.getScreen().getName(),s.getContent()));
+				w("\t\t\t}\n");
 			}
 
 			return;
