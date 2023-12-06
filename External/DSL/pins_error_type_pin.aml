@@ -1,0 +1,23 @@
+app RedButton initial state off {
+	pins
+		Pin digital_1 : 26 : DIGITAL_OUTPUT
+		Pin digital_2 : 21 : DIGITAL_OUTPUT
+		Pin digital_3 : 22 : DIGITAL_INPUT
+		Pin analog_1 : 3 : ANALOG_INPUT
+		Pin analog_2 : 4 : ANALOG_OUTPUT
+
+	bricks
+		Actuator red_led : 3
+		Sensor button : 21
+	
+	states
+		off {
+			red_led <= LOW
+			button is HIGH => on 
+		}
+		on {
+            red_led <= HIGH
+			button is LOW => off
+		}
+}
+
