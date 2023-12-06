@@ -1,4 +1,4 @@
-bus 1 pins "2,3,4,5,6,7,8"
+bus 1 pins "2,3,4,5,6,7,9"
 
 sensor "button"
 actuator "led"

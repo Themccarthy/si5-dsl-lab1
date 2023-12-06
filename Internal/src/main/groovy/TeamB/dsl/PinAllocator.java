@@ -1,16 +1,19 @@
 package TeamB.dsl;
 
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Pin;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.PinType;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class PinAllocator {
     private static PinAllocator instance;
-    private List<Integer> availablePins = new ArrayList<>();
-    private List<Integer> availableBusPins =  new ArrayList<>();
+    private List<String> availableDigitalPins = new ArrayList<>();
+    private List<String> availableAnalogPins = new ArrayList<>();
+    private List<String> availableBusPins =  new ArrayList<>();
 
     public PinAllocator() {
-        availablePins.addAll(List.of(8,9,10,11,12));
-        availableBusPins.addAll(BusPinManager.instance().getBusList());
+        defaultConfig();
     }
 
     public static PinAllocator instance() {
@@ -20,38 +23,48 @@ public class PinAllocator {
         return instance;
     }
 
-    public List<Integer> getAvailablePins() {
-        return availablePins;
+    public void defaultConfig() {
+        availableDigitalPins.addAll(PinManager.instance().getDigitalPinsNumber());
+        availableAnalogPins.addAll(PinManager.instance().getAnalogPinsNumber());
+        availableBusPins.addAll(BusPinManager.instance().getBusListAsString());
     }
 
-    public List<Integer> getAvailableBusPins() {
+    public List<String> getAvailableDigitalPins() {
+        return availableDigitalPins;
+    }
+
+    public List<String> getAvailableAnalogPins() {
+        return availableAnalogPins;
+    }
+
+    public List<String> getAvailableBusPins() {
         return availableBusPins;
     }
 
-    public void deallocatePin(String brickName, Integer pinNumber) {
-        if (!availablePins.contains(pinNumber)) {
-            availablePins.add(pinNumber);
+    public void deallocatePin(String brickName, String pinNumber) {
+        if (!availableDigitalPins.contains(pinNumber)) {
+            availableDigitalPins.add(pinNumber);
             pinDeallocationInfo("(DYNAMIC)", brickName, pinNumber);
         }
     }
 
-    public void deallocateBusPin(String brickName, Integer pinNumber) {
+    public void deallocateBusPin(String brickName, String pinNumber) {
         if (!availableBusPins.contains(pinNumber)) {
             availableBusPins.add(pinNumber);
             pinDeallocationInfo("(DYNAMIC)", brickName, pinNumber);
         }
     }
 
-    public Integer allocatePin(String brickName, Integer pinNumber) throws Exception {
-        if (availablePins.isEmpty() || !availablePins.contains(pinNumber)) {
-            pinAllocationError(brickName, String.valueOf(pinNumber), availablePins);
+    public String allocatePin(String brickName, String pinNumber) throws Exception {
+        if (availableDigitalPins.isEmpty() || !availableDigitalPins.contains(pinNumber)) {
+            pinAllocationError(brickName, String.valueOf(pinNumber), availableDigitalPins);
         }
-        availablePins.remove(pinNumber);
+        availableDigitalPins.remove(pinNumber);
         pinAllocationInfo("(USER NEEDS)", brickName, pinNumber);
         return pinNumber;
     }
 
-    public Integer allocateBusPin(String brickName, Integer pinNumber) throws Exception {
+    public String allocateBusPin(String brickName, String pinNumber) throws Exception {
         if (availableBusPins.isEmpty() || !availableBusPins.contains(pinNumber)) {
             pinAllocationError(brickName, String.valueOf(pinNumber), availableBusPins);
         }
@@ -60,44 +73,62 @@ public class PinAllocator {
         return pinNumber;
     }
 
-    public Integer allocatePin(String brickName) throws Exception {
-        if (availablePins.isEmpty()) {
-            pinAllocationError(brickName, "", availablePins);
+    public String allocatePin(String brickName) throws Exception {
+        if (availableDigitalPins.isEmpty()) {
+            pinAllocationError(brickName, "", availableDigitalPins);
         }
-        Integer pinNumber = availablePins.get(0);
-        availablePins.remove(pinNumber);
+        String pinNumber = availableDigitalPins.get(0);
+        availableDigitalPins.remove(pinNumber);
         pinAllocationInfo("(DYNAMIC)", brickName, pinNumber);
         return pinNumber;
     }
 
-    public Integer allocateBusPin(String brickName) throws Exception {
+    public String allocateBusPin(String brickName) throws Exception {
         if (availableBusPins.isEmpty()) {
             pinAllocationError(brickName, "", availableBusPins);
         }
-        Integer pinNumber = availableBusPins.get(0);
+        String pinNumber = availableBusPins.get(0);
         availableBusPins.remove(pinNumber);
         pinAllocationInfo("(DYNAMIC)", brickName, pinNumber);
         return pinNumber;
     }
 
-    public void pinDeallocationInfo(String action, String brickName, Integer pinDeallocated) {
-        String infoTitle = "Deallocate pin " + pinDeallocated.toString() + " for brick " + brickName;
-        String content = infoTitle + action + "\n";
-
-        logInfoToFile(content);
-    }
-
-    public void pinAllocationInfo(String action, String brickName, Integer pinAllocated) {
-        String infoTitle = "Allocate pin " + pinAllocated.toString() + " for brick " + brickName;
+    public void pinDeallocationInfo(String action, String brickName, String pinDeallocated) {
+        String infoTitle = "Deallocate pin " + pinDeallocated + " for brick " + brickName;
         String content = infoTitle + " " + action + "\n";
 
         logInfoToFile(content);
     }
 
-    public void pinAllocationError(String brickName, String wantedPin, List<Integer> availablePins) throws Exception {
+    public void pinAllocationInfo(String action, String brickName, String pinAllocated) {
+        String infoTitle = "Allocate pin " + pinAllocated + " for brick " + brickName;
+        String content = infoTitle + " " + action + "\n";
+
+        logInfoToFile(content);
+    }
+
+    public void verifyPinType(String brickName, String pin, PinType typeWanted) throws Exception {
+        Pin pinResult;
+        if (typeWanted.equals(PinType.DIGITAL_OUTPUT) || typeWanted.equals(PinType.DIGITAL_INPUT)) {
+            pinResult = PinManager.instance().getDigitalPin(pin);
+        }
+        else {
+            pinResult = PinManager.instance().getAnalogPin(pin);
+        }
+
+        if (pinResult == null) {
+            pinGlobalError(brickName, pin, "Pin is not of type " + typeWanted);
+        }
+    }
+
+    public void pinAllocationError(String brickName, String wantedPin, List<String> availablePins) throws Exception {
+        pinGlobalError(brickName, wantedPin, "Pins available are: " + availablePins.toString());
+    }
+
+    public void pinGlobalError(String brickName, String wantedPin, String errorDesc) throws Exception {
         String errorTitle = "Cannot allocate pin " + wantedPin + " for brick " + brickName;
-        String errorDesc = "Pins available are: " + availablePins.toString();
-        String content = errorTitle + ",  " + errorDesc + "\n";
+
+        String content = errorTitle + ": " + errorDesc + "\n";
 
         logErrorToFile(content);
 

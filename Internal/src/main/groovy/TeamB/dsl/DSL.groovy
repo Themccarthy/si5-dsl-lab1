@@ -1,5 +1,6 @@
 package TeamB.dsl
 
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.PinType
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL;
@@ -19,6 +20,10 @@ class DSL {
 
         binding.setVariable("high", SIGNAL.HIGH)
         binding.setVariable("low", SIGNAL.LOW)
+        binding.setVariable("DIGITAL_INPUT", PinType.DIGITAL_INPUT)
+        binding.setVariable("DIGITAL_OUTPUT", PinType.DIGITAL_OUTPUT)
+        binding.setVariable("ANALOG_INPUT", PinType.ANALOG_INPUT)
+        binding.setVariable("ANALOG_OUTPUT", PinType.ANALOG_OUTPUT)
     }
 
     private static CompilerConfiguration getDSLConfiguration() {

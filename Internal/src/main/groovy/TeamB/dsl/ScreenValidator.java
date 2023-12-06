@@ -16,7 +16,7 @@ public class ScreenValidator {
         if (screenContent.length() > screen.getLineLength()) {
             String errorTitle = "The content " + screenContent + " is invalid for screen " + screen.getName();
             String errorDesc = "The content length should not be more than " + screen.getLineLength();
-            String content = errorTitle + ",  " + errorDesc + "\n";
+            String content = errorTitle + ": " + errorDesc + "\n";
 
             logToFile(content);
 

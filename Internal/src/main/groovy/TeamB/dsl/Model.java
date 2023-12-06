@@ -7,6 +7,7 @@ import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Model {
     private Map<String, Brick> brickMap = new HashMap<>();
@@ -53,7 +54,7 @@ public class Model {
         Screen screen = new Screen();
         screen.setName(name);
         screen.setPin(bus);
-        screen.setBusPins(BusPinManager.instance().getBusPins(bus));
+        screen.setBusPins(BusPinManager.instance().getBusPins(bus).stream().map(Integer::parseInt).collect(Collectors.toList()));
         brickMap.put(name, screen);
 
         bindVariable(name, screen);

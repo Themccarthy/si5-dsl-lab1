@@ -4,19 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BusPinManager {
     private static BusPinManager instance;
-    private Map<Integer, List<Integer>> mapBusPins =  new HashMap<>();
+    private Map<Integer, List<String>> mapBusPins =  new HashMap<>();
 
     public BusPinManager() {
-        try {
-            addBusPins(1, List.of(2,3,4,5,6,7,8));
-            addBusPins(2, List.of(9,10,11,12,13,14,15));
-            addBusPins(3, List.of(16,17,18,19,20,21,22));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        defaultConfig();
     }
 
     public static BusPinManager instance() {
@@ -24,6 +19,18 @@ public class BusPinManager {
             instance = new BusPinManager();
         }
         return instance;
+    }
+
+    public void defaultConfig() {
+        if (mapBusPins.isEmpty()) {
+            try {
+                addBusPins(1, List.of("2","3","4","5","6","7","8"));
+                addBusPins(2, List.of("10","11","12","13","A0","A1","A2"));
+                addBusPins(3, List.of("10","11","12","13","A4","A5","1"));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public int getBusSize() {
@@ -34,29 +41,50 @@ public class BusPinManager {
         return new ArrayList<>(this.mapBusPins.keySet());
     }
 
-    public List<Integer> getBusPins(Integer busNumber) {
+    public List<String> getBusListAsString() {
+        return this.mapBusPins.keySet().stream().map(Object::toString).collect(Collectors.toList());
+    }
+
+    public List<String> getBusPins(Integer busNumber) {
         return mapBusPins.getOrDefault(busNumber, List.of());
     }
 
-    public void addBusPins(Integer busNumber, List<Integer> busPins) throws Exception {
+    public Integer getBusForPin(String pin) {
+        for (Integer bus : mapBusPins.keySet()) {
+            if (getBusPins(bus).contains(pin)) return bus;
+        }
+        return -1;
+    }
+
+    public boolean containsPin(String pin) {
+        for (List<String> pins : mapBusPins.values()) {
+            if (pins.contains(pin)) return true;
+        }
+        return false;
+    }
+
+    public void addBusPins(Integer busNumber, List<String> busPins) throws Exception {
         if (busPins.size() < 7) {
-            busPinManagerError(busNumber, busPins);
+            busPinManagerError(busNumber, busPins, "The bus must contain at least 7 pins");
+        }
+        if (mapBusPins.containsKey(busNumber)) {
+            busPinManagerError(busNumber, busPins, "The bus number " + busNumber + " is already used");
         }
         mapBusPins.put(busNumber, busPins);
         busPinManagerInfo(busNumber, busPins);
     }
 
-    public void busPinManagerInfo(Integer busNumber, List<Integer> busPins) {
+    public void busPinManagerInfo(Integer busNumber, List<String> busPins) {
         String infoTitle = "Add/Update bus number " + busNumber + " with pins " + busPins.toString();
         String content = infoTitle + "\n";
 
         logToFile(content);
     }
 
-    public void busPinManagerError(Integer busNumber, List<Integer> busPins) throws Exception {
+    public void busPinManagerError(Integer busNumber, List<String> busPins, String error) throws Exception {
         String errorTitle = "Cannot add/update bus number " + busNumber + " with pins " + busPins.toString();
-        String errorDesc = "The bus must contain at least 7 pins";
-        String content = errorTitle + ",  " + errorDesc + "\n";
+        String errorDesc = error;
+        String content = errorTitle + ": " + errorDesc + "\n";
 
         logToFile(content);
 

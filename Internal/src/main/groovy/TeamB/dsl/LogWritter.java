@@ -4,7 +4,7 @@ import java.io.*;
 
 public class LogWritter {
     private static LogWritter instance;
-    private final String FILE_PATH = "dsl_logs";
+    private final String FILE_PATH = "aml.log";
     public enum LOG_TYPE {
         INFO("INFO"),
         ERROR("ERROR");

@@ -9,53 +9,73 @@ import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionFirst
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Pin
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.PinType
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Screen
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor
 
 abstract class Basescript extends Script {
 
+    def pin(String pinName) {
+        [on: { p ->
+            [type : { t ->
+                Pin pin = new Pin()
+                pin.setName(pinName)
+                pin.setNumber(p)
+                pin.setPinType(t)
+                PinManager.instance().addPin(pin)
+            }]
+        }]
+    }
+
     def bus(Integer busNumber) {
         [pins : { ps ->
             String pinsUsed = ps
-            List<Integer> pins = pinsUsed.replaceAll("[^\\d,]", "").split(",") as List<Integer>
+            List<String> pins = pinsUsed.split(",") as List<String>
             BusPinManager.instance().addBusPins(busNumber, pins);
         }]
     }
 
     def sensor(String sensorName) {
         // By default auto allocate pin
-        Integer pinNumber = PinAllocator.instance().allocatePin(sensorName)
-        ((DSLBinding) this.getBinding()).getModel().createSensor(sensorName, pinNumber)
+        String pinNumber = PinAllocator.instance().allocatePin(sensorName)
+        ((DSLBinding) this.getBinding()).getModel().createSensor(sensorName, pinNumber as Integer)
 
         [pin : { p ->
+            // First verify that the pin is digital
+            PinAllocator.instance().verifyPinType(sensorName, p as String, PinType.DIGITAL_INPUT)
+
             // In case the user specifies the pin, we deallocate the pin auto allocated before
             PinAllocator.instance().deallocatePin(sensorName, pinNumber)
 
             // Then we allocate the pin specified by the user
-            PinAllocator.instance().allocatePin(sensorName, Integer.valueOf(p))
-            ((DSLBinding) this.getBinding()).getModel().createSensor(sensorName, p)
+            PinAllocator.instance().allocatePin(sensorName, p as String)
+            ((DSLBinding) this.getBinding()).getModel().createSensor(sensorName, p as Integer)
         }]
     }
 
     def actuator(String actuatorName) {
         // By default auto allocate pin
-        Integer pinNumber = PinAllocator.instance().allocatePin(actuatorName)
-        ((DSLBinding) this.getBinding()).getModel().createActuator(actuatorName, pinNumber)
+        String pinNumber = PinAllocator.instance().allocatePin(actuatorName)
+        ((DSLBinding) this.getBinding()).getModel().createActuator(actuatorName, pinNumber as Integer)
 
         [pin : { p ->
+            // First verify that the pin is digital
+            PinAllocator.instance().verifyPinType(actuatorName, p as String, PinType.DIGITAL_INPUT)
+
             // In case the user specifies the pin, we deallocate the pin auto allocated before
             PinAllocator.instance().deallocatePin(actuatorName, pinNumber)
 
             // Then we allocate the pin specified by the user
-            PinAllocator.instance().allocatePin(actuatorName, Integer.valueOf(p))
-            ((DSLBinding) this.getBinding()).getModel().createActuator(actuatorName, p)
+            PinAllocator.instance().allocatePin(actuatorName, p as String)
+            ((DSLBinding) this.getBinding()).getModel().createActuator(actuatorName, p as Integer)
         }]
     }
 
     def screen(String screenName) {
         // By default auto allocate pin
-        Integer pinNumber = PinAllocator.instance().allocateBusPin(screenName)
-        ((DSLBinding) this.getBinding()).getModel().createScreen(screenName, pinNumber)
+        String pinNumber = PinAllocator.instance().allocateBusPin(screenName)
+        ((DSLBinding) this.getBinding()).getModel().createScreen(screenName, pinNumber as Integer)
 
         def screenClosure
         screenClosure =
@@ -64,8 +84,8 @@ abstract class Basescript extends Script {
                 PinAllocator.instance().deallocateBusPin(screenName, pinNumber)
 
                 // Then we allocate the pin specified by the user
-                PinAllocator.instance().allocateBusPin(screenName, Integer.valueOf(b))
-                ((DSLBinding) this.getBinding()).getModel().createScreen(screenName, b)
+                PinAllocator.instance().allocateBusPin(screenName, b)
+                ((DSLBinding) this.getBinding()).getModel().createScreen(screenName, b as Integer)
 
                 return screenClosure
             },
