@@ -65,7 +65,7 @@ export class ArduinoMlBValidator {
     checkApp(app: App, accept: ValidationAcceptor): void {
         let numberPins;
             if(app.pins!== undefined && app.pins.length>0){
-                numberPins = app.pins.length;
+                numberPins = app.pins.filter(pin => pin.type?.value=='DIGITAL_INPUT' || pin.type?.value=='DIGITAL_OUTPUT').length;
             }else{
                 numberPins = availableDigitalPins.length;
             }
