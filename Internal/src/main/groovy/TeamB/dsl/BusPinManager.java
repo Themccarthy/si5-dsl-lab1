@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 public class BusPinManager {
     private static BusPinManager instance;
     private Map<Integer, List<String>> mapBusPins =  new HashMap<>();
+    private boolean hasBeenModified = false;
 
     public BusPinManager() {
         defaultConfig();
@@ -27,6 +28,7 @@ public class BusPinManager {
                 addBusPins(1, List.of("2","3","4","5","6","7","8"));
                 addBusPins(2, List.of("10","11","12","13","A0","A1","A2"));
                 addBusPins(3, List.of("10","11","12","13","A4","A5","1"));
+                hasBeenModified = false;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -67,11 +69,12 @@ public class BusPinManager {
         if (busPins.size() < 7) {
             busPinManagerError(busNumber, busPins, "The bus must contain at least 7 pins");
         }
-        if (mapBusPins.containsKey(busNumber)) {
+        if (hasBeenModified && mapBusPins.containsKey(busNumber)) {
             busPinManagerError(busNumber, busPins, "The bus number " + busNumber + " is already used");
         }
         mapBusPins.put(busNumber, busPins);
         busPinManagerInfo(busNumber, busPins);
+        hasBeenModified = true;
     }
 
     public void busPinManagerInfo(Integer busNumber, List<String> busPins) {

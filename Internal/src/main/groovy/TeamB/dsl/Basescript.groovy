@@ -84,7 +84,7 @@ abstract class Basescript extends Script {
                 PinAllocator.instance().deallocateBusPin(screenName, pinNumber)
 
                 // Then we allocate the pin specified by the user
-                PinAllocator.instance().allocateBusPin(screenName, b)
+                PinAllocator.instance().allocateBusPin(screenName, b as String)
                 ((DSLBinding) this.getBinding()).getModel().createScreen(screenName, b as Integer)
 
                 return screenClosure

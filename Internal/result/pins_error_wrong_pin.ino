@@ -1,2 +1,2 @@
-Cannot allocate pin 26 for brick led2,  Pins available are: [11, 12, 10]
+Cannot allocate pin 26 for brick led2: Pin is not of type DIGITAL_INPUT
 

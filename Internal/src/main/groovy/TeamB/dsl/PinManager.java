@@ -103,7 +103,7 @@ public class PinManager {
     public boolean containsPin(List<Pin> existingPins, Pin pin) {
         for (Pin pin1 : existingPins) {
             if (pin1.getName().equals(pin.getName())) return true;
-            if (pin1.getNumber().equals(pin.getNumber()) && pin1.getPinType().equals(pin.getPinType())) return true;
+            if (pin1.getNumber().equals(pin.getNumber())) return true;
         }
         return false;
     }
