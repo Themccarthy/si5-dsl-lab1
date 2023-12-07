@@ -2,17 +2,12 @@ package TeamB.dsl;
 
 
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.*;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL;
-import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Model {
     private Map<String, Brick> brickMap = new HashMap<>();
@@ -55,6 +50,27 @@ public class Model {
         return (Actuator) brickMap.getOrDefault(name, null);
     }
 
+    public void createScreen(String name, Integer bus) {
+        Screen screen = new Screen();
+        screen.setName(name);
+        screen.setPin(bus);
+        screen.setBusPins(BusPinManager.instance().getBusPins(bus).stream().map(Integer::parseInt).collect(Collectors.toList()));
+        brickMap.put(name, screen);
+
+        bindVariable(name, screen);
+    }
+
+    public void setScreenSize(String name, Integer screenLineLength) {
+        if (brickMap.containsKey(name)) {
+            Screen screen = (Screen) brickMap.get(name);
+            screen.setLineLength(screenLineLength);
+        }
+    }
+
+    public Screen getScreen(String name) {
+        return (Screen) brickMap.getOrDefault(name, null);
+    }
+
     public void createState(String name, List<Action> actions) {
         State state = new State();
         state.setName(name);
@@ -68,9 +84,10 @@ public class Model {
         return stateMap.getOrDefault(name, null);
     }
 
-    public void createTransition(State baseState, State destinationState, List<TransitionCondition> transitionConditions) {
+    public void createTransition(State baseState, State destinationState, TransitionFirst transitionFirst, List<TransitionCondition> transitionConditions) {
         Transition transition = new Transition();
         transition.setNext(destinationState);
+        transition.setTransitionFirst(transitionFirst);
         transition.addAllTransitionConditions(transitionConditions);
         baseState.setTransition(transition);
     }

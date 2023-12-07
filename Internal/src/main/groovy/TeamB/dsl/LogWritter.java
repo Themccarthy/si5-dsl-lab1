@@ -4,7 +4,17 @@ import java.io.*;
 
 public class LogWritter {
     private static LogWritter instance;
-    private final String FILE_PATH = "dsl_logs";
+    private final String FILE_PATH = "aml.log";
+    public enum LOG_TYPE {
+        INFO("INFO"),
+        ERROR("ERROR");
+
+        private String title;
+
+        LOG_TYPE(String title) {
+            this.title = title;
+        }
+    }
 
     public LogWritter() {
         try {
@@ -21,12 +31,12 @@ public class LogWritter {
         return instance;
     }
 
-    public void logToFile(String content) {
+    public void logToFile(LOG_TYPE type, String content) {
         try {
             File file = new File(FILE_PATH);
             FileWriter fr = new FileWriter(file, true);
             BufferedWriter br = new BufferedWriter(fr);
-            br.write(content);
+            br.write(type + " : " + content);
 
             br.close();
             fr.close();

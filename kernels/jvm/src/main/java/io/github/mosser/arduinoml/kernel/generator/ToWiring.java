@@ -2,6 +2,7 @@ package jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator;
 
 
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.*;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Screen;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator;
@@ -14,6 +15,8 @@ import java.util.List;
  */
 public class ToWiring extends Visitor<StringBuffer> {
 	enum PASS {ONE, TWO}
+
+	private String bounceGardName = "";
 
 
 	public ToWiring() {
@@ -31,7 +34,13 @@ public class ToWiring extends Visitor<StringBuffer> {
 		w("// Wiring code generated from an ArduinoML model\n");
 		w(String.format("// Application name: %s\n", app.getName())+"\n");
 
-		w("long debounce = 200;\n");
+		boolean containsScreen = app.getBricks().stream().anyMatch(brick -> brick instanceof Screen);
+		if (containsScreen) {
+			w("#include <LiquidCrystal.h>\n");
+		}
+
+
+		w("\nlong debounce = 200;\n");
 		w("\nenum STATE {");
 		String sep ="";
 		for(State state: app.getStates()){
@@ -80,12 +89,25 @@ public class ToWiring extends Visitor<StringBuffer> {
 	@Override
 	public void visit(Sensor sensor) {
 		if(context.get("pass") == PASS.ONE) {
+			bounceGardName = sensor.getName();
 			w(String.format("\nboolean %sBounceGuard = false;\n", sensor.getName()));
 			w(String.format("long %sLastDebounceTime = 0;\n", sensor.getName()));
 			return;
 		}
 		if(context.get("pass") == PASS.TWO) {
 			w(String.format("  pinMode(%d, INPUT);  // %s [Sensor]\n", sensor.getPin(), sensor.getName()));
+			return;
+		}
+	}
+
+	@Override
+	public void visit(Screen screen) {
+		if(context.get("pass") == PASS.ONE) {
+			w(String.format("\nLiquidCrystal %s(%s);\n", screen.getName(), screen.getBusPins().toString().replace("[", "").replace("]", "")));
+			return;
+		}
+		if(context.get("pass") == PASS.TWO) {
+			w(String.format("  %s.begin(%d,%d);  // %s [Screen]\n", screen.getName(), screen.getLineLength(), screen.getRowLength(), screen.getName()));
 			return;
 		}
 	}
@@ -117,35 +139,29 @@ public class ToWiring extends Visitor<StringBuffer> {
 			return;
 		}
 		if(context.get("pass") == PASS.TWO) {
+			TransitionFirst transitionFirst = transition.getTransitionFirst();
 			List<TransitionCondition> transitionConditions = transition.getTransitionConditions();
 
-			for (TransitionCondition transitionCondition : transitionConditions) {
-				if (transitionCondition.getLogicalCondition().equals(LogicalCondition.NONE)) {
-					String sensorName = transitionCondition.getSensor().getName();
-					w(String.format("\t\t\t%sBounceGuard = millis() - %sLastDebounceTime > debounce;\n",
-							sensorName, sensorName));
-				}
-			}
+			String transitionFirstSensorName = transitionFirst.getSensor().getName();
+			w(String.format("\t\t\t%sBounceGuard = millis() - %sLastDebounceTime > debounce;\n", bounceGardName, bounceGardName));
 
-			w("\t\t\tif(");
+			w(String.format("\t\t\tif(digitalRead(%d) == %s ", transitionFirst.getSensor().getPin(), transitionFirst.getValue()));
 
 			for (TransitionCondition transitionCondition : transitionConditions) {
-				if (transitionCondition.getLogicalCondition().equals(LogicalCondition.NONE)) {
-					w(String.format("digitalRead(%d) == %s && %sBounceGuard ",
-							transitionCondition.getSensor().getPin(), transitionCondition.getValue(), transitionCondition.getSensor().getName()));
+				if (transitionCondition.getLogicalCondition().equals(LogicalOperator.NONE)) {
+					w(String.format("digitalRead(%d) == %s ",
+							transitionCondition.getSensor().getPin(), transitionCondition.getValue()));
 				}
 				else {
 					w(String.format("%s ", transitionCondition.getLogicalCondition().getOperator()));
 				}
 			}
 
+			w(String.format("&& %sBounceGuard", bounceGardName));
+
 			w(") {\n");
 
-			for (TransitionCondition transitionCondition : transitionConditions) {
-				if (transitionCondition.getLogicalCondition().equals(LogicalCondition.NONE)) {
-					w(String.format("\t\t\t\t%sLastDebounceTime = millis();\n", transitionCondition.getSensor().getName()));
-				}
-			}
+			w(String.format("\t\t\t\t%sLastDebounceTime = millis();\n", bounceGardName));
 
 			w("\t\t\t\tcurrentState = " + transition.getNext().getName() + ";\n");
 			w("\t\t\t}\n");
@@ -160,7 +176,16 @@ public class ToWiring extends Visitor<StringBuffer> {
 			return;
 		}
 		if(context.get("pass") == PASS.TWO) {
-			w(String.format("\t\t\tdigitalWrite(%d,%s);\n",action.getActuator().getPin(),action.getValue()));
+			if (action instanceof ActuatorAction a) {
+				w(String.format("\t\t\tdigitalWrite(%d,%s);\n",a.getActuator().getPin(),a.getValue()));
+			}
+			else if (action instanceof ScreenAction s){
+				w(String.format("\t\t\tif(!%sBounceGuard) {\n", bounceGardName));
+				w(String.format("\t\t\t\t%s.clear();\n",s.getScreen().getName()));
+				w(String.format("\t\t\t\t%s.print(\"%s\");\n",s.getScreen().getName(),s.getContent()));
+				w("\t\t\t}\n");
+			}
+
 			return;
 		}
 	}

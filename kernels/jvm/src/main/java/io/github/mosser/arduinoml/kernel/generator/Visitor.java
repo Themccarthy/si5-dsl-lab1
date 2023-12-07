@@ -3,6 +3,7 @@ package jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator;
 
 
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.App;
+import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Screen;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action;
 import jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State;
@@ -22,6 +23,7 @@ public abstract class Visitor<T> {
 
 	public abstract void visit(Actuator actuator);
 	public abstract void visit(Sensor sensor);
+	public abstract void visit(Screen screen);
 
 
 	/***********************

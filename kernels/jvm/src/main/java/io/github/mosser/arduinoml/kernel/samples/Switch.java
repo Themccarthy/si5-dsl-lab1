@@ -29,11 +29,11 @@ public class Switch {
 		off.setName("off");
 
 		// Creating actions
-		Action switchTheLightOn = new Action();
+		ActuatorAction switchTheLightOn = new ActuatorAction();
 		switchTheLightOn.setActuator(led);
 		switchTheLightOn.setValue(SIGNAL.HIGH);
 
-		Action switchTheLightOff = new Action();
+		ActuatorAction switchTheLightOff = new ActuatorAction();
 		switchTheLightOff.setActuator(led);
 		switchTheLightOff.setValue(SIGNAL.LOW);
 
