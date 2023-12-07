@@ -1,9 +1,12 @@
 INFO : Add/Update bus number 1 with pins [2, 3, 4, 5, 6, 7, 8]
 INFO : Add/Update bus number 2 with pins [10, 11, 12, 13, A0, A1, A2]
 INFO : Add/Update bus number 3 with pins [10, 11, 12, 13, A4, A5, 1]
-INFO : Allocate pin 8 for brick led1 (DYNAMIC)
-INFO : Deallocate pin 8 for brick led1 (DYNAMIC)
-INFO : Allocate pin 9 for brick led1 (USER NEEDS)
-INFO : Allocate pin 10 for brick led2 (DYNAMIC)
-INFO : Deallocate pin 10 for brick led2 (DYNAMIC)
-ERROR : Cannot allocate pin 9 for brick led2: Pins available are: [11, 12, 8, 10]
+INFO : Define digital_1 (DIGITAL_OUTPUT) on pin 21
+INFO : Digital pins are : [8, 9, 10, 11, 12, 21]
+INFO : Define digital_2 (DIGITAL_INPUT) on pin 22
+INFO : Digital pins are : [8, 9, 10, 11, 12, 21, 22]
+INFO : Define analog_1 (ANALOG_OUTPUT) on pin 14
+INFO : Analog pins are : [A0, A1, A2, A3, A4, A5, 14]
+INFO : Allocate pin 8 for brick button (DYNAMIC)
+INFO : Allocate pin 9 for brick led1 (DYNAMIC)
+ERROR : Cannot allocate pin 14 for brick led1: Pin is not of type DIGITAL_INPUT

@@ -1,0 +1,31 @@
+<dsl> ::= <statement>+
+<statement> ::= <declaration> | <expression> | <export>
+
+<declaration> ::= <pinDeclaration> | <sensorDeclaration> | <actuatorDeclaration> | <screenDeclaration> | <busDeclaration>
+<expression> ::= <stateDefinition> | <transitionDefinition> | <initialStateDefinition>
+<export> ::= 'export' <identifier>
+
+<pinDeclaration> ::= 'pin' <identifier> 'on' <value> 'type' <type>
+<type> ::= 'DIGITAL_INPUT' | 'DIGITAL_OUTPUT' | 'ANALOG_INPUT' | 'ANALOG_OUTPUT'
+<value> ::= <number> | <string>
+<identifier> ::= <string>
+
+<sensorDeclaration> ::= 'sensor' <identifier> 'pin' <value>
+<actuatorDeclaration> ::= 'actuator' <identifier> 'pin' <value>
+<screenDeclaration> ::= 'screen' <identifier> 'bus' <value>
+<busDeclaration> ::= 'bus' <identifier> 'pins' '"' <value>* '"'
+
+<stateDefinition> ::= 'state' <identifier> 'trigger' <actionDefinition> <logicalCommand>*
+
+<transitionDefinition> ::= 'transition' <identifier> 'to' <identifier> 'when' <actionDefinition> <logicalCommand>*
+
+<actionDefinition> ::= <identifier> <command>
+<command> ::= <actuatorCommand> | <sensorCommand> | <screenCommand>
+<actuatorCommand> ::= 'turn' <signal>
+<sensorCommand> ::= 'turn' <signal>
+<screenCommand> ::= 'display' <string>
+
+<logicalCommand> ::= <logicalExpression> <actionDefinition>
+<logicalExpression> ::= 'and' | 'or'
+
+<initialStateDefinition> ::= 'initialState' <identifier>

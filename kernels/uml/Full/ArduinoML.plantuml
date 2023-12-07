@@ -1,0 +1,210 @@
+@startuml
+
+!theme plain
+left to right direction
+skinparam linetype ortho
+
+class Action {
+  + accept(Visitor): void
+}
+class Actuator {
+  + accept(Visitor): void
+}
+class ActuatorAction {
+  - value: SIGNAL
+  - actuator: Actuator
+  + getValue(): SIGNAL
+  + getActuator(): Actuator
+  + setActuator(Actuator): void
+  + setValue(SIGNAL): void
+}
+class App {
+  - initial: State
+  - states: List<State>
+  - bricks: List<Brick>
+  - name: String
+  + accept(Visitor): void
+  + getStates(): List<State>
+  + getBricks(): List<Brick>
+  + getInitial(): State
+  + getName(): String
+  + setBricks(List<Brick>): void
+  + setInitial(State): void
+  + setName(String): void
+  + setStates(List<State>): void
+}
+class Brick {
+  - name: String
+  - pin: int
+  + setName(String): void
+  + setPin(int): void
+  + getPin(): int
+  + getName(): String
+}
+enum LogicalOperator << enumeration >> {
+  + NONE: 
+  + OR: 
+  - operator: String
+  + AND: 
+  + getOperator(): String
+  + values(): LogicalOperator[]
+  + valueOf(String): LogicalOperator
+}
+interface NamedElement << interface >> {
+  + getName(): String
+  + setName(String): void
+}
+class Pin {
+  - name: String
+  - number: String
+  - pinType: PinType
+  + setName(String): void
+  + setNumber(String): void
+  + getNumber(): String
+  + toString(): String
+  + getName(): String
+  + getPinType(): PinType
+  + setPinType(PinType): void
+}
+enum PinType << enumeration >> {
+  - title: String
+  + DIGITAL_OUTPUT: 
+  + ANALOG_INPUT: 
+  + ANALOG_OUTPUT: 
+  + DIGITAL_INPUT: 
+  + values(): PinType[]
+  + valueOf(String): PinType
+}
+enum SIGNAL << enumeration >> {
+  + HIGH: 
+  + LOW: 
+  + values(): SIGNAL[]
+  + valueOf(String): SIGNAL
+}
+class Screen {
+  - rowLength: Integer
+  - busPins: List<Integer>
+  - lineLength: Integer
+  + setBusPins(List<Integer>): void
+  + getRowLength(): Integer
+  + setRowLength(Integer): void
+  + accept(Visitor): void
+  + getLineLength(): Integer
+  + setLineLength(Integer): void
+  + getBusPins(): List<Integer>
+}
+class ScreenAction {
+  - screen: Screen
+  - content: String
+  + setContent(String): void
+  + getScreen(): Screen
+  + setScreen(Screen): void
+  + getContent(): String
+}
+class Sensor {
+  + accept(Visitor): void
+}
+class State {
+  - name: String
+  - actions: List<Action>
+  - transition: Transition
+  + setActions(List<Action>): void
+  + setName(String): void
+  + setTransition(Transition): void
+  + getActions(): List<Action>
+  + getTransition(): Transition
+  + accept(Visitor): void
+  + getName(): String
+}
+class ToWiring {
+  - bounceGardName: String
+  + visit(Transition): void
+  + visit(Actuator): void
+  + visit(Action): void
+  - w(String): void
+  + visit(Screen): void
+  + visit(App): void
+  + visit(Sensor): void
+  + visit(State): void
+}
+class Transition {
+  - transitionConditions: List<TransitionCondition>
+  - next: State
+  - transitionFirst: TransitionFirst
+  + getTransitionFirst(): TransitionFirst
+  + setNext(State): void
+  + setTransitionFirst(TransitionFirst): void
+  + addAllTransitionConditions(List<TransitionCondition>): void
+  + getNext(): State
+  + addTransitionCondition(TransitionCondition): void
+  + accept(Visitor): void
+  + getTransitionConditionAtIndex(int): TransitionCondition
+  + getTransitionConditions(): List<TransitionCondition>
+}
+class TransitionCondition {
+  - value: SIGNAL
+  - sensor: Sensor
+  - logicalOperator: LogicalOperator
+  + setValue(SIGNAL): void
+  + setLogicalCondition(LogicalOperator): void
+  + getSensor(): Sensor
+  + getValue(): SIGNAL
+  + getLogicalCondition(): LogicalOperator
+  + setSensor(Sensor): void
+}
+class TransitionFirst {
+  - sensor: Sensor
+  - value: SIGNAL
+  + setValue(SIGNAL): void
+  + getSensor(): Sensor
+  + setSensor(Sensor): void
+  + getValue(): SIGNAL
+}
+interface Visitable << interface >> {
+  + accept(Visitor): void
+}
+class Visitor<T> {
+  # result: T
+  # context: Map<String, Object>
+  + visit(Action): void
+  + visit(State): void
+  + visit(App): void
+  + getResult(): T
+  + visit(Screen): void
+  + visit(Actuator): void
+  + visit(Sensor): void
+  + visit(Transition): void
+}
+
+Action               -[#008200,dashed]-^  Visitable           
+Actuator             -[#000082,plain]-^  Brick               
+ActuatorAction       -[#000082,plain]-^  Action              
+ActuatorAction      "1" *-[#595959,plain]-> "actuator\n1" Actuator            
+ActuatorAction      "1" *-[#595959,plain]-> "value\n1" SIGNAL              
+App                 "1" *-[#595959,plain]-> "bricks\n*" Brick               
+App                  -[#008200,dashed]-^  NamedElement        
+App                 "1" *-[#595959,plain]-> "states\n*" State               
+App                  -[#008200,dashed]-^  Visitable           
+Brick                -[#008200,dashed]-^  NamedElement        
+Brick                -[#008200,dashed]-^  Visitable           
+Pin                  -[#008200,dashed]-^  NamedElement        
+Pin                 "1" *-[#595959,plain]-> "pinType\n1" PinType             
+Screen               -[#000082,plain]-^  Brick               
+ScreenAction         -[#000082,plain]-^  Action              
+ScreenAction        "1" *-[#595959,plain]-> "screen\n1" Screen              
+Sensor               -[#000082,plain]-^  Brick               
+State               "1" *-[#595959,plain]-> "actions\n*" Action              
+State                -[#008200,dashed]-^  NamedElement        
+State               "1" *-[#595959,plain]-> "transition\n1" Transition          
+State                -[#008200,dashed]-^  Visitable           
+ToWiring             -[#000082,plain]-^  Visitor             
+Transition          "1" *-[#595959,plain]-> "next\n1" State               
+Transition          "1" *-[#595959,plain]-> "transitionConditions\n*" TransitionCondition 
+Transition          "1" *-[#595959,plain]-> "transitionFirst\n1" TransitionFirst     
+Transition           -[#008200,dashed]-^  Visitable           
+TransitionCondition "1" *-[#595959,plain]-> "logicalOperator\n1" LogicalOperator     
+TransitionCondition "1" *-[#595959,plain]-> "value\n1" SIGNAL              
+TransitionCondition "1" *-[#595959,plain]-> "sensor\n1" Sensor              
+TransitionFirst     "1" *-[#595959,plain]-> "value\n1" SIGNAL              
+TransitionFirst     "1" *-[#595959,plain]-> "sensor\n1" Sensor              
+@enduml

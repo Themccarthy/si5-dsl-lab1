@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>C:/Users/MSI/Desktop/Git Projects/si5-dsl-lab1/kernels/jvm/src/main/java/io/github/mosser/arduinoml/kernel</OriginalElement>
+  <nodes>
+    <node x="311.0" y="646.375">jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ScreenAction</node>
+    <node x="1032.0" y="251.0">jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.PinType</node>
+    <node x="625.0" y="837.5649999999999">jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL</node>
+    <node x="629.0" y="980.8975">jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor</node>
+    <node x="271.0" y="983.5">jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition</node>
+    <node x="629.5" y="724.0">jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action</node>
+    <node x="301.0" y="475.3975">jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State</node>
+    <node x="64.32316384180785" y="285.3974999999999">jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring</node>
+    <node x="308.5" y="777.0">jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionFirst</node>
+    <node x="622.5" y="788.5649999999999">jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator</node>
+    <node x="833.5" y="480.41749999999996">jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick</node>
+    <node x="822.0" y="285.3975">jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Pin</node>
+    <node x="294.32316384180785" y="274.3974999999999">jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitor</node>
+    <node x="1053.0" y="565.0">jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitable</node>
+    <node x="-12.0" y="397.1475">jvm.src.main.java.io.github.mosser.arduinoml.kernel.App</node>
+    <node x="304.5" y="873.0">jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ActuatorAction</node>
+    <node x="-90.0" y="945.3149999999999">jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition</node>
+    <node x="1030.0" y="413.0">jvm.src.main.java.io.github.mosser.arduinoml.kernel.NamedElement</node>
+    <node x="693.8110915254236" y="1040.0">jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.LogicalOperator</node>
+    <node x="594.0" y="586.8149999999999">jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Screen</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.App" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitable" relationship="REALIZATION">
+      <point x="71.5" y="-22.64749999999998" />
+      <point x="668.5" y="434.5" />
+      <point x="668.5" y="459.0" />
+      <point x="1106.5" y="459.0" />
+      <point x="0.0" y="-14.5" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Screen" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick" relationship="GENERALIZATION">
+      <point x="82.0" y="1.1368683772161603E-13" />
+      <point x="841.0" y="635.815" />
+      <point x="841.0" y="862.5" />
+      <point x="890.0" y="862.5" />
+      <point x="0.0" y="38.00049999999999" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ActuatorAction" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action" relationship="GENERALIZATION">
+      <point x="76.0" y="0.0" />
+      <point x="483.0" y="911.0" />
+      <point x="483.0" y="771.065" />
+      <point x="676.0" y="771.065" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Pin" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.NamedElement" relationship="REALIZATION">
+      <point x="0.0" y="49.000500000000045" />
+      <point x="890.0" y="409.0" />
+      <point x="905.0" y="409.0" />
+      <point x="905.0" y="434.5" />
+      <point x="-76.5" y="7.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitable" relationship="REALIZATION">
+      <point x="-46.5" y="1.375" />
+      <point x="537.5" y="739.875" />
+      <point x="537.5" y="459.0" />
+      <point x="1106.5" y="459.0" />
+      <point x="0.0" y="-14.5" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitable" relationship="REALIZATION">
+      <point x="94.0" y="-48.999999999999886" />
+      <point x="153.5" y="459.0" />
+      <point x="1106.5" y="459.0" />
+      <point x="0.0" y="-14.5" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ActuatorAction" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL" relationship="TO_ONE">
+      <point x="-76.0" y="0.0" />
+      <point x="273.0" y="911.0" />
+      <point x="273.0" y="857.0" />
+      <point x="236.823" y="857.0" />
+      <point x="236.823" y="1099.0" />
+      <point x="578.5" y="1099.0" />
+      <point x="578.5" y="947.0" />
+      <point x="676.0" y="947.0" />
+      <point x="0.0" y="38.000000000000114" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ScreenAction" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Screen" relationship="TO_ONE">
+      <point x="69.5" y="-15.0" />
+      <point x="-82.0" y="33.56000000000006" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitable" relationship="REALIZATION">
+      <point x="0.0" y="-48.99950000000001" />
+      <point x="380.5" y="459.0" />
+      <point x="1106.5" y="459.0" />
+      <point x="0.0" y="-14.5" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Pin" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.PinType" relationship="TO_ONE">
+      <point x="68.0" y="-12.39749999999998" />
+      <point x="-74.5" y="0.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.App" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.NamedElement" relationship="REALIZATION">
+      <point x="-12.677" y="-59.999499999999955" />
+      <point x="46.823" y="233.5" />
+      <point x="580.5" y="233.5" />
+      <point x="580.5" y="409.0" />
+      <point x="905.0" y="409.0" />
+      <point x="905.0" y="434.5" />
+      <point x="-76.5" y="7.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.ToWiring" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitor" relationship="GENERALIZATION">
+      <point x="90.0" y="0.0" />
+      <point x="-102.0" y="0.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.LogicalOperator" relationship="TO_ONE">
+      <point x="109.5" y="15.0" />
+      <point x="-80.0" y="-52.5" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor" relationship="TO_ONE">
+      <point x="0.0" y="-49.0" />
+      <point x="380.5" y="965.0" />
+      <point x="641.4482652203383" y="965.0" />
+      <point x="-34.55173477966173" y="-14.777035186439889" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.App" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State" relationship="TO_MANY">
+      <point x="71.5" y="-37.64749999999998" />
+      <point x="221.4141678644068" y="419.5" />
+      <point x="221.4141678644068" y="485.2727448587584" />
+      <point x="-80.21725468926661" y="-39.12475514124162" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition" relationship="TO_MANY">
+      <point x="149.5" y="38.18500000000006" />
+      <point x="-109.5" y="0.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.generator.Visitable" relationship="REALIZATION">
+      <point x="0.0" y="-38.000500000000045" />
+      <point x="890.0" y="459.0" />
+      <point x="1106.5" y="459.0" />
+      <point x="0.0" y="-14.5" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.NamedElement" relationship="REALIZATION">
+      <point x="-15.0" y="-48.99950000000001" />
+      <point x="365.5" y="409.0" />
+      <point x="905.0" y="409.0" />
+      <point x="905.0" y="434.5" />
+      <point x="-76.5" y="7.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionFirst" relationship="TO_ONE">
+      <point x="124.0" y="-49.0" />
+      <point x="183.5" y="800.0" />
+      <point x="-72.0" y="-15.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State" relationship="TO_ONE">
+      <point x="149.5" y="1.1368683772161603E-13" />
+      <point x="273.0" y="994.315" />
+      <point x="273.0" y="550.4444091299448" />
+      <point x="-81.0747765875717" y="26.046909129944765" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.App" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick" relationship="TO_MANY">
+      <point x="-71.5" y="0.0" />
+      <point x="-107.5" y="457.1475" />
+      <point x="-107.5" y="1177.5" />
+      <point x="905.0" y="1177.5" />
+      <point x="15.0" y="38.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Transition" relationship="TO_ONE">
+      <point x="-79.07389215819319" y="-4.538038576269855" />
+      <point x="168.5" y="519.8594614237302" />
+      <point x="109.0" y="-49.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ScreenAction" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action" relationship="GENERALIZATION">
+      <point x="69.5" y="0.0" />
+      <point x="483.0" y="684.375" />
+      <point x="483.0" y="771.065" />
+      <point x="676.0" y="771.065" />
+      <point x="0.0" y="14.5" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionCondition" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL" relationship="TO_ONE">
+      <point x="99.0" y="-49.0" />
+      <point x="479.5" y="947.0" />
+      <point x="629.0530681129943" y="947.0" />
+      <point x="-46.94693188700569" y="38.14712329943757" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.State" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.Action" relationship="TO_MANY">
+      <point x="79.5" y="0.0" />
+      <point x="775.5" y="524.3975" />
+      <point x="775.5" y="738.5" />
+      <point x="46.5" y="0.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionFirst" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.SIGNAL" relationship="TO_ONE">
+      <point x="-72.49955760452173" y="8.136372790965424" />
+      <point x="278.8446978531054" y="823.1363727909654" />
+      <point x="278.8446978531054" y="823.0035377175142" />
+      <point x="213.8128290621469" y="823.0035377175142" />
+      <point x="213.8128290621469" y="1099.0" />
+      <point x="578.5" y="1099.0" />
+      <point x="578.5" y="947.0" />
+      <point x="712.6225827796602" y="947.0" />
+      <point x="36.622582779660206" y="37.59707548022686" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.NamedElement" relationship="REALIZATION">
+      <point x="-15.0" y="-38.000500000000045" />
+      <point x="875.0" y="409.0" />
+      <point x="905.0" y="409.0" />
+      <point x="905.0" y="434.5" />
+      <point x="-76.5" y="7.0" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick" relationship="GENERALIZATION">
+      <point x="53.5" y="1.1368683772161603E-13" />
+      <point x="758.0" y="803.065" />
+      <point x="758.0" y="862.5" />
+      <point x="890.0" y="862.5" />
+      <point x="0.0" y="38.00049999999999" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.TransitionFirst" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor" relationship="TO_ONE">
+      <point x="72.0" y="-4.934999999999945" />
+      <point x="520.251836926553" y="810.065" />
+      <point x="520.251836926553" y="842.0791508700565" />
+      <point x="545.6991240677967" y="842.0791508700565" />
+      <point x="545.6991240677967" y="947.23125" />
+      <point x="703.1898418983043" y="947.23125" />
+      <point x="27.18984189830428" y="-12.776150757061373" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Sensor" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Brick" relationship="GENERALIZATION">
+      <point x="47.0" y="4.999999999881766E-4" />
+      <point x="758.0" y="995.398" />
+      <point x="758.0" y="862.5" />
+      <point x="890.0" y="862.5" />
+      <point x="0.0" y="38.00049999999999" />
+    </edge>
+    <edge source="jvm.src.main.java.io.github.mosser.arduinoml.kernel.behavioral.ActuatorAction" target="jvm.src.main.java.io.github.mosser.arduinoml.kernel.structural.Actuator" relationship="TO_ONE">
+      <point x="76.0" y="15.56499999999994" />
+      <point x="545.6991240677967" y="926.5649999999999" />
+      <point x="545.6991240677967" y="799.565" />
+      <point x="-53.5" y="-3.4999999999998863" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.9170984455958554" showDependencies="true" x="501.96672470056524" y="640.5980631864473" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
