@@ -1,7 +1,6 @@
-2023-12-05T20:50:16.744Z - Info: Pin disponibles pour les briques digital : 8,9,10,11,12
-2023-12-05T20:50:16.747Z - Info: Pin disponibles pour les briques analog : A0,A1,A2,A4,A5
-2023-12-05T20:50:16.749Z - Info: Bus disponibles pour les ecrans : 2,3,4,5,6,7,8,10,11,12,13,A0,A1,A2,10,11,12,13,A4,A5,1
-2023-12-05T20:50:16.752Z - Info: La brique red_led a été lié dynamiquement au pin digital 8
-2023-12-05T20:50:16.754Z - Info: La brique red_led2 a été lié dynamiquement au pin digital 9
-2023-12-05T20:50:16.756Z - Info: La brique button a été lié dynamiquement au pin digital 10
-
+2023-12-07T19:38:32.252Z - Info: Pin disponibles pour les briques digital : 8,9,10,11,12
+2023-12-07T19:38:32.256Z - Info: Pin disponibles pour les briques analog : A0,A1,A2,A4,A5
+2023-12-07T19:38:32.257Z - Info: Bus disponibles pour les ecrans : 2,3,4,5,6,7,8,10,11,12,13,A0,A1,A2,10,11,12,13,A4,A5,1
+2023-12-07T19:38:32.259Z - Info: La brique red_led a bien été lié au pin 12 comme demandé par l'utilisateur
+2023-12-07T19:38:32.260Z - Info: La brique red_led2 a bien été lié au pin 11 comme demandé par l'utilisateur
+2023-12-07T19:38:32.262Z - Info: La brique button a bien été lié au pin 9 comme demandé par l'utilisateur
