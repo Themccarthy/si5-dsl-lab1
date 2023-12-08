@@ -10,9 +10,9 @@
 <value> ::= <number> | <string>
 <identifier> ::= <string>
 
-<sensorDeclaration> ::= 'sensor' <identifier> 'pin' <value>
-<actuatorDeclaration> ::= 'actuator' <identifier> 'pin' <value>
-<screenDeclaration> ::= 'screen' <identifier> 'bus' <value>
+<sensorDeclaration> ::= 'sensor' <identifier> ['pin' <value>]
+<actuatorDeclaration> ::= 'actuator' <identifier> ['pin' <value>]
+<screenDeclaration> ::= 'screen' <identifier> ['bus' <value>]
 <busDeclaration> ::= 'bus' <identifier> 'pins' '"' <value>* '"'
 
 <stateDefinition> ::= 'state' <identifier> 'trigger' <actionDefinition> <logicalCommand>*
