@@ -54,7 +54,7 @@ export class ArduinoMlBValidator {
             size = screenAction.screen.ref?.size;
         }
         if (screenAction.value && screenAction.value.length > size) {
-            accept('error', 'Le texte a afficher sur l ecran ne doit pas dépasser '+size+' caractères.', { node: screenAction, property: 'value' });
+            accept('error', 'Le texte à afficher sur l\'écran ne doit pas dépasser ' + size + ' caractères.', { node: screenAction, property: 'value' });
         }
     }
 
@@ -70,7 +70,7 @@ export class ArduinoMlBValidator {
                 numberPins = availableDigitalPins.length;
             }
         if (app.bricks.filter(brick=> isActuator(brick) || isSensor(brick)).length > numberPins) {
-            accept('error', 'Pas assez de pin disponible pour toutes les briques digitales crées, vous disposez de '+app.bricks.filter(brick=> isActuator(brick) || isSensor(brick)).length+' briques digitales dans votre systeme or vous n avez que '+numberPins+' pins disponibles pour les briques digitales', { node: app, property: 'bricks' });
+            accept('error', 'Pas assez de pins disponibles pour toutes les briques digitales crées, vous disposez de ' + app.bricks.filter(brick=> isActuator(brick) || isSensor(brick)).length + ' briques digitales dans votre système. Or vous n\'avez que ' + numberPins + ' pins disponibles pour les briques digitales', { node: app, property: 'bricks' });
         }
 
         let pinsNumberUsed :integer[] =[] ;
@@ -87,7 +87,7 @@ export class ArduinoMlBValidator {
             numberBus = availableBus.length;
         }
         if (app.bricks.filter(brick=> isScreen(brick)).length > numberBus) {
-            accept('error','Pas assez de pin disponible pour toutes les ecrans crées, vous disposez de '+app.bricks.filter(brick=> isScreen(brick)).length+' ecran dans votre systeme or vous n avez que '+numberBus+' bus disponible pour les ecran', { node: app, property: 'bricks' });
+            accept('error','Pas assez de pins disponibles pour tous les écrans crées, vous disposez de ' + app.bricks.filter(brick=> isScreen(brick)).length + ' écran(s) dans votre système. Or vous n\'avez que ' + numberBus + ' bus disponible(s) pour les écrans', { node: app, property: 'bricks' });
         }
 
         let bus : integer[]
@@ -101,7 +101,7 @@ export class ArduinoMlBValidator {
 
         app.bricks.forEach( screen => {
             if ( isScreen(screen) &&  screen.bus!=undefined && !bus.includes(screen.bus) ) {
-                accept('error', 'Le bus '+screen.bus +' n existe pas', { node: screen, property: 'bus' });
+                accept('error', 'Le bus ' + screen.bus + ' n\'existe pas', { node: screen, property: 'bus' });
             }
         })
 
@@ -117,13 +117,13 @@ export class ArduinoMlBValidator {
                 }
                 const pinsCommun = pinsUsedNumberBus.find(element => pinsNumberUsed.includes(element));
                 if(pinsCommun!==undefined){
-                    accept('error', 'Le pin '+pinsCommun+' est utliser dans le bus '+screen.bus+' est utilisé dans une autre brique', { node: screen, property: 'bus' });
+                    accept('error', 'Le pin ' + pinsCommun + ' est utliisé dans le bus ' + screen.bus + ' est utilisé dans une autre brique', { node: screen, property: 'bus' });
                 }
             }
             if ( isScreen(screen) && screen.bus!==undefined && compteur[screen.bus]) {
                 compteur[screen.bus]++;
                 if (compteur[screen.bus] > 1) {
-                    accept('error', 'Le bus est deja utlisé par une autre brique', { node: screen, property: 'bus' });
+                    accept('error', 'Le bus est déjà utilisé par une autre brique', { node: screen, property: 'bus' });
                 }
             } else if(isScreen(screen) && screen.bus!==undefined){
                 compteur[screen.bus] = 1;
@@ -139,7 +139,7 @@ export class ArduinoMlBValidator {
     checkPins(pin: Pin, accept: ValidationAcceptor): void {
         // Check if pin number is not already used
         let pinNumbers = Array.from(this.pins.keys()).map(item => item.pin.toString());
-        if (pinNumbers.includes(pin.pin!.toString())) accept('error', 'Ce numero de pin est deja utilisé par un autre pin', { node: pin, property: 'pin' });
+        if (pinNumbers.includes(pin.pin!.toString())) accept('error', 'Ce numéro de pin est déjà utilisé par un autre pin', { node: pin, property: 'pin' });
 
         // Check if pin name is not already used
         let pinNames = Array.from(this.pins.keys()).map(item => item.name);
@@ -152,7 +152,7 @@ export class ArduinoMlBValidator {
     checkBus(bus: Bus, accept: ValidationAcceptor): void {
         // Check if bus number is not already used
         let busNumbers = Array.from(this.correctBus.keys()).map(item => item.number.toString());
-        if (busNumbers.includes(bus.number!.toString())) accept('error', 'Ce numero de bus est deja utilisé par un autre bus', { node: bus, property: 'number' });
+        if (busNumbers.includes(bus.number!.toString())) accept('error', 'Ce numéro de bus est deja utilisé par un autre bus', { node: bus, property: 'number' });
 
         // Check bus pins 
         if (bus.pins.length!=7) accept('error', 'Les bus doivent posséder 7 pins', { node: bus, property: 'pins' });
@@ -187,14 +187,14 @@ export class ArduinoMlBValidator {
                     let pinNumbers = Array.from(this.pins.keys()).map(item => item.pin);
                     if (pinNumbers.length !== 0 && !pinNumbers.includes(brick.pin.toString())) {
                         error =true;
-                        accept('error', 'Le pin '+brick.pin +' n existe pas', { node: brick, property: 'pin' });
+                        accept('error', 'Le pin '+ brick.pin +' n\'existe pas', { node: brick, property: 'pin' });
                     }
                 }
                 
                 // Check if brick pin is unique
                 if (brick.pin !== undefined && !hasCurrentBrick && allPinsDefined.some(item => brick.pin && item[0].pin === brick.pin.toString())){
                     error =true;
-                    accept('error', 'Le pin est deja utlisé par une autre brique', { node: brick, property: 'pin' });
+                    accept('error', 'Le pin est déjà utlisé par une autre brique', { node: brick, property: 'pin' });
                 }
                 // Check if brick pin type is correct
                 if(brick.pin !== undefined){
@@ -205,7 +205,7 @@ export class ArduinoMlBValidator {
                         ( isActuator(brick) && 
                         (currentPin.type !== 'DIGITAL_INPUT' && currentPin.type !== 'DIGITAL_OUTPUT')))) {
                         error =true;
-                        accept('error', 'Le brique est assigné au mauvais type de pin (type invalide)', { node: brick, property: 'pin' });
+                        accept('error', 'La brique est assignée au mauvais type de pin (type invalide)', { node: brick, property: 'pin' });
                     }
                 if(error == false){
                     this.pins.set(currentPin!, brick);
